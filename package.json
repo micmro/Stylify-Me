@@ -2,8 +2,7 @@
   "name": "myapp",
   "version": "0.0.1",
   "dependencies": {
-    "express": "2.5.x",
-	"phantomjs": "1.8.0-2"
+    "express": "2.5.x"
   },
   "engines": {
     "node": "0.8.x",
