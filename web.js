@@ -14,28 +14,14 @@ app.get('/', function(request, response) {
   	response.send('Hello World!');
 });
 
-app.get('/testA', function(request, response) {
-	response.send('Hi there');
-});
-
-app.get('/testB', function(request, response) {
+app.get('/query', function(request, response) {
   	var childArgs = [
-	  path.join(__dirname, 'color-crawler.js'),
-	  'http://google.com'
+	  path.join(__dirname, 'phantom_files/color-crawler.js'),
+	  req.query["url"]
 	]
   	childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
   		response.send('Hello World!' + stdout);
 	})
-});
-
-app.get('/testC', function(request, response) {
-  	var childArgs = [
-	  path.join(__dirname, 'color-crawler.js'),
-	  'http://google.com'
-	];
-  	childProcess.execFile('/vendor/phantomjs/bin/phantomjs', childArgs, function(err, stdout, stderr) {
-  		response.send(stdout);
-	});
 });
 
 var port = process.env.PORT || 5000;
