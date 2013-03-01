@@ -5,6 +5,8 @@ LD_LIBRARY_PATH="/usr/local/lib:/usr/lib:/lib:/app/vendor/phantomjs/lib"
 $ heroku config:add LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib:/app/vendor/phantomjs/lib
 
 
+https://github.com/micmro/heroku-buildpack-nodejs-phantomjs
+
 
 
 http://nerdery.crowdmob.com/post/33143120111/heroku-ruby-on-rails-and-phantomjs

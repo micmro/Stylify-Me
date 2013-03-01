@@ -14,13 +14,37 @@ app.get('/', function(request, response) {
   	response.send('Hello World!')
 });
 
-app.get('/test', function(request, response) {
+app.get('/testA', function(request, response) {
+	response.send('Hi there')
+}
+
+app.get('/testB', function(request, response) {
   	var childArgs = [
 	  path.join(__dirname, 'color-crawler.js'),
 	  'http://google.com'
 	]
   	childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
   		response.send('Hello World!' + stdout)
+	})
+});
+
+app.get('/testC', function(request, response) {
+  	var childArgs = [
+	  path.join(__dirname, 'color-crawler.js'),
+	  'http://google.com'
+	]
+  	childProcess.execFile('/vendor/phantomjs/bin/phantomjs', childArgs, function(err, stdout, stderr) {
+  		response.send(stdout)
+	})
+});
+
+app.get('/testD', function(request, response) {
+  	var childArgs = [
+	  path.join(__dirname, 'color-crawler.js'),
+	  'http://google.com'
+	]
+  	childProcess.execFile(phantomjs.path, childArgs, function(err, stdout, stderr) {
+  		response.send(stdout)
 	})
 });
 
