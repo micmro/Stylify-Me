@@ -1,10 +1,11 @@
 
 /*
- * GET users listing.
+ * GET pahntom response
  */
 
-var childProcess = require('child_process')
-var binPath = "vendor/phantomjs/bin/phantomjs"//LD_LIBRARY_PATH
+var childProcess = require('child_process'),
+	path = require('path'),
+	binPath = "vendor/phantomjs/bin/phantomjs";
 
 exports.query = function(req, res){
   	var childArgs = [
