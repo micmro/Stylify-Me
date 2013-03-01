@@ -21,7 +21,7 @@ function isValidURL(url){
 exports.query = function(req, res){
 	var url = req.query["url"];
 	if(url && isValidURL(url)){
-		var filePath = path.join(__dirname, '../phantom_files/color-crawler.js');
+		var filePath = path.join(__dirname, '../color-crawler.js');
 	  	var childArgs = [
 		  filePath,
 		  req.query["url"]
