@@ -27,7 +27,7 @@ exports.query = function(req, res){
 		  req.query["url"]
 		];
 	  	childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
-	  		res.send('PHANTOM SAYS('+url+'):' + filePath + ' ' + stdout);
+	  		res.send('PHANTOM SAYS('+url+'):' + '\n' + filePath + '\n' + err + '\n' + stdout + '\n' + stderr);
 		});
   	}else{
   		res.send('INVALID URL!');
