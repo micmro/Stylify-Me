@@ -80,14 +80,14 @@ a:hover, a:focus { text-decoration: underline; }
 /*footer*/
 #main-footer {background:#e7e5e5; padding: 30px 0; color:#959595;}
 #main-footer a {font-weight: bold;}
-#link-back-to-top i {float: right; width: 8px; height: 8px; margin:4px 0 0; background: url(../img/up-sign.png) 0 0 no-repeat;}
+#link-back-to-top i {float: right; width: 8px; height: 8px; margin:4px 0 0; background: url(../images/up-sign.png) 0 0 no-repeat;}
 #main-footer #second-row {margin-top: 36px;}
 
 /*main*/
 #main-holder {background-color: #fff; position: relative; padding: 18px 0;}
 
 #btn-download {position: absolute; top:18px; right: 10px; padding:6px 10px; background: #000; border:0; color: #fff; font-size: 14px; font-weight: bold; cursor: pointer; -webkit-border-radius: 8px; -moz-border-radius: 8px; border-radius: 8px;}
-#btn-download i {float: left; width: 12px; height: 12px; margin:3px 7px 0 0; background: url(../img/down-btn.png) 0 0 no-repeat;}
+#btn-download i {float: left; width: 12px; height: 12px; margin:3px 7px 0 0; background: url(../images/down-btn.png) 0 0 no-repeat;}
 #btn-download[disabled] {background: #e1e1e1;  cursor: default;}
 
 h1 { font-weight: normal; padding-top: 18px; }
