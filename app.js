@@ -5,7 +5,7 @@
 
 var express = require('express')
   , routes = require('./routes')
-  , user = require('./routes/user')
+  , phantom = require('./routes/phantom')
   , http = require('http')
   , path = require('path');
 
