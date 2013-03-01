@@ -1,4 +1,5 @@
 var express = require('express');
+var path = require('path');
 
 var app = express.createServer(express.logger());
 var childProcess = require('child_process')
