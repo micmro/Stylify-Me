@@ -21,13 +21,13 @@ function isValidURL(url){
 exports.query = function(req, res){
 	var url = req.query["url"];
 	if(url && isValidURL(url)){
-		var filePath = path.join(__dirname, '../javascripts/color-crawler.js');
+		var filePath = path.join(__dirname, '../public/javascripts/color-crawler.js');
 	  	var childArgs = [
 		  filePath,
 		  req.query["url"]
 		];
 	  	childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
-	  		res.send('PHANTOM SAYS('+url+'):' + '\n' + filePath + '\n' + err + '\n' + stdout + '\n' + stderr);
+	  		res.send('PHANTOM SAYS('+url+'):'  + '\n' + __dirname + '\n' + '\n' + filePath + '\n' + err + '\n' + stdout + '\n' + stderr);
 		});
   	}else{
   		res.send('INVALID URL!');
