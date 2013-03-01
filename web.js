@@ -1,10 +1,27 @@
 var express = require('express');
 
 var app = express.createServer(express.logger());
+var childProcess = require('child_process')
+var phantomjs = require('phantomjs')
+var binPath = "vendor/phantomjs/bin/phantomjs"//phantomjs.path //LD_LIBRARY_PATH
+
+
+
+
 
 
 app.get('/', function(request, response) {
   	response.send('Hello World!')
+});
+
+app.get('/test', function(request, response) {
+  	var childArgs = [
+	  path.join(__dirname, 'color-crawler.js'),
+	  'http://google.com'
+	]
+  	childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
+  		response.send('Hello World!' + stdout)
+	})
 });
 
 var port = process.env.PORT || 5000;
