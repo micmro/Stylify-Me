@@ -2,10 +2,11 @@
   "name": "myapp",
   "version": "0.0.1",
   "dependencies": {
-    "express": "2.5.x"
+    "express": "2.5.x",
+	"phantomjs": "1.8.0-2"
   },
   "engines": {
-    "node": ">=0.4.7 <0.7.0",
-    "npm": ">=1.0.0"
+    "node": "0.8.x",
+    "npm": "1.1.x"
   }
 }
