@@ -23,7 +23,7 @@ exports.query = function(req, res){
 	if(url && isValidURL(url)){
 		var filePath = path.join(__dirname, '../public/javascripts/color-crawler.js');
 	  	var childArgs = [
-		  filePath,
+		  "color-crawler.js",
 		  req.query["url"]
 		];
 	  	childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
