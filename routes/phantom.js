@@ -21,9 +21,9 @@ function isValidURL(url){
 exports.query = function(req, res){
 	var url = req.query["url"];
 	if(url && isValidURL(url)){
-		var filePath = path.join(__dirname, '../color-crawler.js');
+		var filePath = path.join(__dirname, '../javascripts/color-crawler.js');
 	  	var childArgs = [
-		  'color-crawler.js',
+		  filePath,
 		  req.query["url"]
 		];
 	  	childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
