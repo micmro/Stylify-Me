@@ -10,7 +10,7 @@ var express = require('express')
   , path = require('path')
   , childProcess = require('child_process')
   , binPath = "vendor/phantomjs/bin/phantomjs"
-  , phantomFilePath = path.join(__dirname, 'color-crawler.js');
+  , phantomFilePath = "stylify-crawler.js";
 
 var app = express();
 
@@ -18,6 +18,7 @@ app.configure(function(){
   app.set('port', process.env.PORT || 5000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
+  app.use(express.compress());
   app.use(express.favicon());
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
@@ -48,59 +49,14 @@ app.get('/query', function(req, res){
   if(url && isValidURL(url)){
     var childArgs = [phantomFilePath, req.query["url"]];
     childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
-      res.send('PHANTOM SAYS('+url+'):'  + '<br/>__dirname:' + __dirname + '<br/>:phantomFilePath' + phantomFilePath + '<br/>err:' + err + '<br/>stdout:' + stdout + '<br/>:stderr' + stderr);
+      if(err || stderr){
+        res.json(400, { error: stderr })
+      }      
+        res.json({response : stdout});
+      }
     });
   }else{
-    res.send('INVALID URL!');
-  }
-});
-
-app.get('/queryA', function(req, res){
-  var url = req.query["url"];
-  if(url && isValidURL(url)){
-    var childArgs = ['../color-crawler.js', req.query["url"]];
-    childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
-      res.send('PHANTOM SAYS('+url+'):'  + '<br/>' + __dirname + '<br/>phantomFilePath:' + 'color-crawler.js' + '<br/>err:' + err + '<br/>stdout:' + stdout + '<br/>:stderr' + stderr);
-    });
-  }else{
-    res.send('INVALID URL!');
-  }
-});
-
-app.get('/queryB', function(req, res){
-  var url = req.query["url"];
-  if(url && isValidURL(url)){
-    var childArgs = ['/color-crawler.js', req.query["url"]];
-    childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
-      res.send('PHANTOM SAYS('+url+'):'  + '<br/>' + __dirname + '<br/>' + phantomFilePath + '<br/>err:' + err + '<br/>stdout:' + stdout + '<br/>:stderr' + stderr);
-    });
-  }else{
-    res.send('INVALID URL!');
-  }
-});
-
-app.get('/queryC', function(req, res){
-  var url = req.query["url"];
-  if(url && isValidURL(url)){
-    var childArgs = ['--version'];
-    childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
-      res.send('PHANTOM SAYS('+url+'):'  + '<br/>' + __dirname + '<br/>err:' + err + '<br/>stdout:' + stdout + '<br/>:stderr' + stderr);
-    });
-  }else{
-    res.send('INVALID URL!');
-  }
-});
-
-app.get('/queryD', function(req, res){
-  var url = req.query["url"];
-  var phantomfile = req.query["phantomfile"];
-  if(url && isValidURL(url)){
-    var childArgs = [phantomfile, url];
-    childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
-      res.send('PHANTOM SAYS('+url+'):'  + '<br/>' + __dirname + '<br/>phantomfile:' + phantomfile + '<br/>err:' + err + '<br/>stdout:' + stdout + '<br/>:stderr' + stderr);
-    });
-  }else{
-    res.send('INVALID URL!');
+    res.json(400, { error: 'Invalid or missing "url" parameter' })
   }
 });
 
