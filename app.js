@@ -82,9 +82,22 @@ app.get('/queryB', function(req, res){
 app.get('/queryC', function(req, res){
   var url = req.query["url"];
   if(url && isValidURL(url)){
-    var childArgs = ['-version'];
+    var childArgs = ['--version'];
     childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
-      res.send('PHANTOM SAYS('+url+'):'  + '<br/>' + __dirname + '<br/>' + phantomFilePath + '<br/>err:' + err + '<br/>stdout:' + stdout + '<br/>:stderr' + stderr);
+      res.send('PHANTOM SAYS('+url+'):'  + '<br/>' + __dirname + '<br/>err:' + err + '<br/>stdout:' + stdout + '<br/>:stderr' + stderr);
+    });
+  }else{
+    res.send('INVALID URL!');
+  }
+});
+
+app.get('/queryD', function(req, res){
+  var url = req.query["url"];
+  var phantomfile = req.query["phantomfile"];
+  if(url && isValidURL(url)){
+    var childArgs = [phantomfile, url];
+    childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
+      res.send('PHANTOM SAYS('+url+'):'  + '<br/>' + __dirname + '<br/>phantomfile:' + phantomfile + '<br/>err:' + err + '<br/>stdout:' + stdout + '<br/>:stderr' + stderr);
     });
   }else{
     res.send('INVALID URL!');
