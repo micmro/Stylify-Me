@@ -5,7 +5,7 @@
 
 var express = require('express')
   , routes = require('./routes')
-  , phantom = require('./routes/phantom')
+  //, phantom = require('./routes/phantom')
   , http = require('http')
   , path = require('path')
   , childProcess = require('child_process')
@@ -42,18 +42,43 @@ function isValidURL(url){
 };
 
 app.get('/', routes.index);
+
 app.get('/query', function(req, res){
   var url = req.query["url"];
   if(url && isValidURL(url)){
     var childArgs = [phantomFilePath, req.query["url"]];
-
     childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
-      res.send('PHANTOM SAYS('+url+'):'  + '\n' + __dirname + '\n' + '\n' + phantomFilePath + '\n' + err + '\n' + stdout + '\n' + stderr);
+      res.send('PHANTOM SAYS('+url+'):'  + '\n\r' + __dirname + '\n\r' + phantomFilePath + '\n\r' + err + '\n\r' + stdout + '\n\r' + stderr);
     });
   }else{
     res.send('INVALID URL!');
   }
 });
+
+app.get('/queryA', function(req, res){
+  var url = req.query["url"];
+  if(url && isValidURL(url)){
+    var childArgs = ['color-crawler.js', req.query["url"]];
+    childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
+      res.send('PHANTOM SAYS('+url+'):'  + '\n\r' + __dirname + '\n\r' + phantomFilePath + '\n\r' + err + '\n\r' + stdout + '\n\r' + stderr);
+    });
+  }else{
+    res.send('INVALID URL!');
+  }
+});
+
+app.get('/queryB', function(req, res){
+  var url = req.query["url"];
+  if(url && isValidURL(url)){
+    var childArgs = ['./color-crawler.js', req.query["url"]];
+    childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
+      res.send('PHANTOM SAYS('+url+'):'  + '\n\r' + __dirname + '\n\r' + phantomFilePath + '\n\r' + err + '\n\r' + stdout + '\n\r' + stderr);
+    });
+  }else{
+    res.send('INVALID URL!');
+  }
+});
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
