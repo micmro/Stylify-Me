@@ -50,13 +50,13 @@ app.get('/query', function(req, res){
     var childArgs = [phantomFilePath, req.query["url"]];
     childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
       if(err || stderr){
-        res.json(400, { error: stderr })
-      }      
-        res.json({response : stdout});
+        res.json(400, { "error": stderr })
+      } else{
+        res.json({"response" : stdout});
       }
     });
   }else{
-    res.json(400, { error: 'Invalid or missing "url" parameter' })
+    res.json(400, { "error": 'Invalid or missing "url" parameter' })
   }
 });
 
