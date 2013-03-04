@@ -2,11 +2,10 @@ var	page = require('webpage').create(),
 	args = require('system').args,
 	address;
 
-console.log("START color-crawler");
 /*phantom settings*/
 phantom.cookiesEnabled = false;
 /*request and render settings*/
-page.zoomFactor = 0.25;
+page.zoomFactor = 1;
 page.viewportSize = { width: 1024, height: 768 };
 
 
@@ -46,10 +45,7 @@ var processing = {
 			};
 		});
 
-		for(arg in pageAttributes){
-			console.log("setting " +  arg + ": " + pageAttributes[arg]);	
-		}
-		
+		return pageAttributes;
 	}
 };
 
@@ -68,13 +64,18 @@ if (args.length === 0) {
             console.log('FAIL to load the address');
             phantom.exit();
         } else {
-        	page.render("thumbs/" + utils.makeFilename(address) + '.png');
-        	//if(page.includeJs("http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js")){
         	if(page.injectJs("lib/jquery.1.8.3.min.js")){
-        		console.log("jQuery Loaded");
-	    		var result = processing.parsePage(page);
-	    		console.log("EXIT color-crawler - SUCCESS");
-	    		phantom.exit(result);
+	    		var result = processing.parsePage(page)
+	    			,resultArr = []
+	    			,imgPath = "public/images/thumbs/" + utils.makeFilename(address) + '.png'
+	    		page.render(imgPath);
+	    		
+				for(arg in result){
+					resultArr.push('"' + arg + '":"' + result[arg] + '"');
+				}
+				resultArr.push('"thumbPath":"' + imgPath.replace("public/", "") + '"');
+				console.log("{"+resultArr.join(",")+"}");
+	    		phantom.exit();
 			}else{
 				console.log("ERROR LOADING JQUERY");
 				phantom.exit();

@@ -48,11 +48,13 @@ app.get('/query', function(req, res){
   var url = req.query["url"];
   if(url && isValidURL(url)){
     var childArgs = [phantomFilePath, req.query["url"]];
+    console.log(path.join(__dirname, binPath))
     childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
-      if(err || stderr){
+      if(err || stderr){        
         res.json(400, { "error": stderr })
       } else{
-        res.json({"response" : stdout});
+        console.log("stdout", stdout, "stderr", stderr);
+        res.json(JSON.parse(stdout));
       }
     });
   }else{
