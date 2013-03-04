@@ -67,7 +67,7 @@
 		setColor(5, data["p-text-colour"]);
 		setColor(6, data["background-colour"]);
 
-		$("#result-body-dt").find("span:first").text(data["base-font-family"] + ", " + tlfy.util.rgb2hex(data["base-text-colour"]);
+		$("#result-body-dt").find("span:first").text(data["base-font-family"] + ", " + stlfy.util.rgb2hex(data["base-text-colour"]));
 
 		dom.homepageImgHolder.empty().append($("<img />", {"src" : data["thumbPath"]}));
 	};
