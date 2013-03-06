@@ -5,6 +5,7 @@
 
 var express = require('express')
   , routes = require('./routes')
+  , routesAbout = require('./routes/about')
   //, phantom = require('./routes/phantom')
   , http = require('http')
   , path = require('path')
@@ -44,16 +45,16 @@ function isValidURL(url){
 
 app.get('/', routes.index);
 
+app.get('/about', routesAbout.about);
+
 app.get('/query', function(req, res){
   var url = req.query["url"];
   if(url && isValidURL(url)){
     var childArgs = [phantomFilePath, req.query["url"]];
-    console.log(path.join(__dirname, binPath))
     childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
       if(err || stderr){        
         res.json(400, { "error": stderr })
       } else{
-        console.log("stdout", stdout, "stderr", stderr);
         res.json(JSON.parse(stdout));
       }
     });

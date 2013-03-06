@@ -1,18 +1,4 @@
-<!DOCTYPE html>
-<!--[if IE 8]>         <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<title><%- title %></title>
-<meta name="viewport" content="width=device-width">
-<link rel="stylesheet" href="stylesheets/style.css" />
-
-</head>
-<body>
-<!--[if lt IE 8]>
-    <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
-<![endif]-->
+<% include header.ejs %>
 <header id="main-header">
   <form class="container_16">
       <div class="grid_9">
@@ -21,7 +7,7 @@
       </div>
 
 
-      <a id="link-about"  class="grid_2 push_5" href="#">About Stylify »</a>
+      <a id="link-about"  class="grid_2 push_5" href="/about">About Stylify »</a>
   </form>
 </header>
 <div id="main-holder" class="container_16">
@@ -169,23 +155,4 @@
   </div>
 
 </div>
-<footer id="main-footer">
-  <div class="container_16">
-    <div class="grid_14">
-      Version 1.0 Created by <a href="https://twitter.com/annabelleyoon">@annabelleyoon</a> and <a href="https://twitter.com/MicMro">@MicMro</a>
-    </div> 
-    <a href="#main-header" id="link-back-to-top" class="grid_2 func_back-to-top">Back to top<i></i></a>
-    
-    <div id="second-row">
-      <div class="grid_2">FACEBOOK</div>
-      <div class="grid_2">TWITTER</div>
-      <a href="#" id="link-donate" class="grid_2">Donate »</a>
-    <div>
-    
-  <div>
-</footer>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="javascripts/jquery-1.9.1.min.js"><\/script>')</script>
-<script src="javascripts/stylify.js"></script>
-</body>
-</html>
+<% include footer.ejs %>
