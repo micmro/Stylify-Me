@@ -8,7 +8,6 @@
 				return url.match(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/gi);
 			},
 			rgb2hex : function(rgb) {
-				console.log(rgb, rgb.indexOf("rgb"));
 				if(!rgb || rgb.indexOf("rgb") != 0){
 					return rgb|| "-";
 				}
@@ -28,41 +27,43 @@
 	var dom = {
 			inputQueryUrl : $("#input-stylify"),
 			buttonQueryUrl : $("#btn-stylify"),
+			formQueryUrl : $("#form-stylify"),
 			homepageImgHolder : $("#homepage-img-holder")
 	};
 
 	var isQuerying = false;
+	var currQueryUrl = "";
 	
 
 	stlfy.init = function(){
 
-		dom.buttonQueryUrl.on("click", function(event){
+		dom.formQueryUrl.on("submit", function(event){
 			event.preventDefault();
+			currQueryUrl = dom.inputQueryUrl.val();
+			_gaq.push(['_trackEvent', 'home', 'search', currQueryUrl]);
 			if(isQuerying){
+				_gaq.push(['_trackEvent', 'home', 'search-still-querying', currQueryUrl]);
 				return
 			}
-			isQuerying = true;
+			
 
-			var url = $.trim(dom.inputQueryUrl.val()).toLowerCase();
+			var url = $.trim(currQueryUrl).toLowerCase();
 			if(url.indexOf("http://") != 0 && url.indexOf("https://") != 0){
 				url = "http://" + url;
 			}
-			console.log(event, stlfy.util.isUrl(url));
 			
 			if(stlfy.util.isUrl(url)){
+				isQuerying = true;
 				stlfy.queryUrl(url);
 			}else{
+				_gaq.push(['_trackEvent', 'home', 'invalid-search', currQueryUrl]);
 				alert("this does not seem to be valid url");
 			}
 		});
 	};
 
 	stlfy.queryUrl = function(url){
-		if(url.indexOf("http://") != 0 && url.indexOf("https://") != 0){
-			url = "http://" + url;
-		}
 		$.getJSON("/query?url="+ url, stlfy.renderResult);
-
 	};
 
 	var setColor = function(id, color){
@@ -83,7 +84,6 @@
 	}
 
 	stlfy.renderResult = function(data){
-		console.log("renderResult", data);
 		setColor(1, data["background-colour"]);
 		setColor(2, data["base-text-colour"]);
 		setColor(3, data["h1-text-colour"]);	
@@ -117,7 +117,7 @@
 
 
 		dom.homepageImgHolder.empty().append($("<img />", {"src" : data["thumbPath"]}));
-
+		_gaq.push(['_trackEvent', 'home', 'search-retrieved', currQueryUrl]);
 		isQuerying = false;
 	};
 
