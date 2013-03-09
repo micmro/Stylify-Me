@@ -30,7 +30,8 @@
 			buttonQueryUrl : $("#btn-stylify"),
 			formQueryUrl : $("#form-stylify"),
 			homepageImgHolder : $("#homepage-img-holder"),
-			loaderOverlay : $("#loadingOverlay")
+			loaderOverlay : $("#loadingOverlay"),
+			backToTopLink : $("#link-back-to-top")
 	};
 
 	var isQuerying = false;
@@ -61,6 +62,11 @@
 				_gaq.push(['_trackEvent', 'home', 'invalid-search', currQueryUrl]);
 				alert("this does not seem to be valid url");
 			}
+		});
+
+		dom.backToTopLink.on("click", function(event) {
+			event.preventDefault();
+			$("html, body").animate({ scrollTop: 0 }, "slow");
 		});
 	};
 
