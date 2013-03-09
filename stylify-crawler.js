@@ -1,3 +1,4 @@
+"use strict";
 var	page = require('webpage').create(),
 	args = require('system').args,
 	address;
@@ -32,6 +33,14 @@ var utils = {
 		} else {
 			return '"' + key + '":"' + val + '"';
 		}
+	},
+	isValidURL : function(url) {
+		var urlRegEx = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+		if(urlRegEx.test(url)){
+			return true;
+		}else{
+			return false;
+		}
 	}
 };
 
@@ -40,10 +49,12 @@ var processing = {
 		var pageAttributes = page.evaluate(function () {
 			var images = $("img");
 			var imgPaths = [];
-			if(imgPaths.length >= 3){
-				imgPaths.push(images[0].src);
+			var test = "";
+			test = images.length;
+			if(images.length >= 3){
+				imgPaths.push(images[parseInt(images.length/2)-1].src);
 				imgPaths.push(images[parseInt(images.length/2)].src);
-				imgPaths.push(images[parseInt(images.length-1)].src);
+				imgPaths.push(images[parseInt(images.length/2)+1].src);
 			}else{
 				images.each(function(i, el){
 					imgPaths.push(el.src);
@@ -51,9 +62,12 @@ var processing = {
 			}
 
 			$.fn.exists = function(){
-			if(this.length>0) 
-			    return this;
-			return false; };
+				if(this.length>0){
+				    return this;
+				}else{
+					return false; 
+				}
+			};
 
 			var baseSelector = ($("[role=main]:first").exists()||$("#main").exists()||$("body"));
 			var h1 = (baseSelector.find("h1:first").exists()||$("h1:first"));
@@ -70,6 +84,7 @@ var processing = {
 
 			return {
 				"title" : document.title
+				,"test" : test
 				, "h1-text-colour" : h1.css("color")||naMsg
 				, "h2-text-colour" : h2.css("color")||naMsg
 				, "h3-text-colour" : h3.css("color")||naMsg
@@ -122,39 +137,37 @@ var processing = {
 	}
 };
 
-
-
-
-
-
 if (args.length === 0) {
     console.log('Usage: color-crawler.js <some URL>');
     phantom.exit();
 }else{
 	address = args[1];
-	page.open(address, function (status) {	    
-	    if (status !== 'success') {
-            console.log('FAIL to load the address');
-            phantom.exit();
-        } else {
-        	if(page.injectJs("lib/jquery.1.8.3.min.js")){
-	    		var result = processing.parsePage(page, address)
-	    			,resultArr = []
-	    			,imgPath = "public/images/thumbs/" + utils.makeFilename(address) + '.png'
-	    		page.render(imgPath);
-	    		
-				for(arg in result){
-					resultArr.push(utils.renderJsonNode(arg, result[arg]));
+	if(utils.isValidURL(address)){	
+		page.open(address, function (status) {	    
+		    if (status !== 'success') {
+	            console.log('FAIL to load the address');
+	            phantom.exit();
+	        } else {
+	        	if(page.injectJs("lib/jquery.1.8.3.min.js")){
+		    		var result = processing.parsePage(page, address)
+		    			,resultArr = []
+		    			,imgPath = "public/images/thumbs/" + utils.makeFilename(address) + '.png'
+		    		page.render(imgPath);
+		    		
+					for(var arg in result){
+						resultArr.push(utils.renderJsonNode(arg, result[arg]));
+					}
+					resultArr.push('"thumbPath":"' + imgPath.replace("public/", "") + '"');
+					console.log("{"+resultArr.join(",")+"}");
+		    		phantom.exit();
+				}else{
+					console.log("ERROR LOADING JQUERY");
+					phantom.exit();
 				}
-				resultArr.push('"thumbPath":"' + imgPath.replace("public/", "") + '"');
-				console.log("{"+resultArr.join(",")+"}");
-	    		phantom.exit();
-			}else{
-				console.log("ERROR LOADING JQUERY");
-				phantom.exit();
 			}
-		}
-		
-	    
-	});	 
+		});	
+	} else {
+		console.error("ERROR: INVALID URL");
+		phantom.exit();
+	}
 }

@@ -25,10 +25,12 @@
 	};
 
 	var dom = {
+			body : $(document.body),
 			inputQueryUrl : $("#input-stylify"),
 			buttonQueryUrl : $("#btn-stylify"),
 			formQueryUrl : $("#form-stylify"),
-			homepageImgHolder : $("#homepage-img-holder")
+			homepageImgHolder : $("#homepage-img-holder"),
+			loaderOverlay : $("#loadingOverlay")
 	};
 
 	var isQuerying = false;
@@ -53,7 +55,7 @@
 			}
 			
 			if(stlfy.util.isUrl(url)){
-				isQuerying = true;
+				
 				stlfy.queryUrl(url);
 			}else{
 				_gaq.push(['_trackEvent', 'home', 'invalid-search', currQueryUrl]);
@@ -62,7 +64,20 @@
 		});
 	};
 
+	stlfy.setQueryInProgressState = function(){
+		isQuerying = true;
+		dom.body.addClass("loading");
+		dom.loaderOverlay.fadeIn();
+	};
+
+	stlfy.setQueryDoneState = function(){
+		isQuerying = false;
+		dom.body.removeClass("loading");
+		dom.loaderOverlay.fadeOut();
+	}
+
 	stlfy.queryUrl = function(url){
+		stlfy.setQueryInProgressState();
 		$.getJSON("/query?url="+ url, stlfy.renderResult);
 	};
 
@@ -111,14 +126,14 @@
 		$("#result-links-dd").css({"color":data["a-text-colour"]})
 
 		$.each(data["img-paths"], function(i, el){
-			$("#image-holder-" + 1).find("img").attr("src", el);
+			$("#image-holder-" + (i+1)).find("img").attr("src", el);
 		});
 		
 
 
 		dom.homepageImgHolder.empty().append($("<img />", {"src" : data["thumbPath"]}));
 		_gaq.push(['_trackEvent', 'home', 'search-retrieved', currQueryUrl]);
-		isQuerying = false;
+		stlfy.setQueryDoneState();
 	};
 
 	$(function() {

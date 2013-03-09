@@ -6,7 +6,6 @@
 var express = require('express')
   , routes = require('./routes')
   , routesAbout = require('./routes/about')
-  //, phantom = require('./routes/phantom')
   , http = require('http')
   , path = require('path')
   , childProcess = require('child_process')
