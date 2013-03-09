@@ -89,8 +89,13 @@
 
 	var setColor = function(id, color){
 		var holder = $("#color-" + id);
-		holder.find(".swatch-holder").css("background", color);
-		holder.find(".colour-hex").text(stlfy.util.rgb2hex(color));
+		if(color){
+			holder.fadeIn();
+			holder.find(".swatch-holder").css("background", color);
+			holder.find(".colour-hex").text(stlfy.util.rgb2hex(color));
+		}else{
+			holder.faceOut();
+		}
 	};
 
 	var setStyle = function(el, data, dataBase){
@@ -135,7 +140,6 @@
 			$("#image-holder-" + (i+1)).find("img").attr("src", el);
 		});
 		
-
 
 		dom.homepageImgHolder.empty().append($("<img />", {"src" : data["thumbPath"]}));
 		_gaq.push(['_trackEvent', 'home', 'search-retrieved', currQueryUrl]);
