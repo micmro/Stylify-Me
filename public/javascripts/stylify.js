@@ -68,6 +68,17 @@
 			event.preventDefault();
 			$("html, body").animate({ scrollTop: 0 }, "slow");
 		});
+
+		$(window).on('scroll', function(){
+			if(document.body.scrollHeight > $(document.body).height()){
+				dom.backToTopLink.show();
+			}else{
+				dom.backToTopLink.hide();
+			}
+		}).trigger("scroll");
+
+		
+
 	};
 
 	stlfy.setQueryInProgressState = function(){

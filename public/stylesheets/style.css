@@ -94,8 +94,9 @@ a:hover, a:focus { text-decoration: underline; }
 /*footer*/
 #main-footer {background:#e7e5e5; padding: 30px 0; color:#959595; position: absolute; bottom: 0; left:0; right: 0;}
 #main-footer a {font-weight: bold;}
-#link-back-to-top i {float: right; width: 8px; height: 8px; margin:4px 0 0; background: url(../images/up-sign.png) 0 0 no-repeat;}
 #main-footer #second-row {margin-top: 36px;}
+
+#link-back-to-top i { float: right; width: 8px; height: 8px; margin:4px 8px 0 0; -webkit-transform: rotate(270deg); -moz-transform: rotate(270deg); -o-transform: rotate(270deg); writing-mode:bt-rl;}
 
 /*main*/
 #main-holder {background-color: #fff; position: relative; padding: 18px 0;}
