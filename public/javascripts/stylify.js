@@ -42,7 +42,7 @@
 
 		dom.inputQueryUrl.on("blur keypress", function(event){			
 			if(event.type != "keypress" || event.which == 13){
-				if(dom.inputQueryUrl.val().indexOf("://") == -1){
+				if(dom.inputQueryUrl.val().indexOf("://") == -1 && dom.inputQueryUrl.val() != ""){
 					dom.inputQueryUrl.val("http://" + dom.inputQueryUrl.val());
 				}
 			}
