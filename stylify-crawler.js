@@ -49,8 +49,6 @@ var processing = {
 		var pageAttributes = page.evaluate(function () {
 			var images = $("img");
 			var imgPaths = [];
-			var test = "";
-			test = images.length;
 			if(images.length >= 3){
 				imgPaths.push(images[parseInt(images.length/2)-1].src);
 				imgPaths.push(images[parseInt(images.length/2)].src);
@@ -84,7 +82,6 @@ var processing = {
 
 			return {
 				"title" : document.title
-				,"test" : test
 				, "h1-text-colour" : h1.css("color")||naMsg
 				, "h2-text-colour" : h2.css("color")||naMsg
 				, "h3-text-colour" : h3.css("color")||naMsg
@@ -120,7 +117,7 @@ var processing = {
 				, "h5-font-style" : h5.css("font-style")||naMsg
 				, "h6-font-style" : h6.css("font-style")||naMsg
 
-				, "base-text-colour" : baseSelector.css("font-family")||naMsg
+				, "base-text-colour" : baseSelector.css("color")||naMsg
 				, "base-font" : baseSelector.css("font-family")||naMsg
 				, "base-font-size" : baseSelector.css("font-size")||naMsg
 				, "base-leading" : baseSelector.css("line-height")||naMsg
