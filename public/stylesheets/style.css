@@ -63,8 +63,8 @@ body{min-width:960px}
 
 /*styles*/
 body {height: auto; min-height:100%; padding: 0 0 120px; position: relative; margin:0 0; background: #fff; color: #959595; font:normal 14px/18px "Helvetica Neue", Arial, Helvetica, sans-serif;  }
-
 body.loading {cursor: wait;}
+body.resultShown {color: #000;}
 
 a { color: #000; text-decoration: none;}
 a:hover, a:focus { text-decoration: underline; }
@@ -111,7 +111,7 @@ h2 {padding-top: 18px; font-weight: bold; font-size: 14px; line-height: 36px; co
 .swatch-holder {width:88px; height: 88px; background: #e1e1e1;}
 .swatch-wrap figcaption span {display: block;}
 
-.grid-dl {margin-top: -19px; color: #959595; display: table-row;}
+.grid-dl {margin-top: -19px; display: table-row;}
 .grid-dl dt{float: left; clear: both; padding: 18px 0; width: 34%; border:solid 1px #ebebeb; border-left:0; border-bottom:0; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; box-sizing:border-box;}
 .grid-dl dd{float: left; padding: 18px 0 18px 18px; width: 66%; border-top:solid 1px #ebebeb; overflow: hidden; white-space:nowrap; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; box-sizing:border-box;}
 

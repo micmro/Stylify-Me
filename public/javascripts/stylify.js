@@ -78,7 +78,7 @@
 
 	stlfy.setQueryDoneState = function(){
 		isQuerying = false;
-		dom.body.removeClass("loading");
+		dom.body.removeClass("loading").addClass("resultShown");
 		dom.loaderOverlay.fadeOut();
 		dom.buttonQueryUrl.blur();
 	}
@@ -120,14 +120,6 @@
 		setColor(5, data["p-text-colour"]);
 		setColor(6, data["a-text-colour"]);
 
-		/*
-		$("#result-header-1-dt").find("span:first").text(data["h1-font"] + ", " + data["h1-font-style"] + ", " + data["h1-font-size"] + ", " + data["h1-leading"] + ", " + stlfy.util.rgb2hex(data["h1-text-colour"]));
-		$("#result-header-2-dt").find("span:first").text(data["h2-font"] + ", " + data["h2-font-style"] + ", " + data["h2-font-size"] + ", " + data["h2-leading"] + ", " + stlfy.util.rgb2hex(data["h2-text-colour"]));
-		$("#result-header-3-dt").find("span:first").text(data["h3-font"] + ", " + data["h3-font-style"] + ", " + data["h3-font-size"] + ", " + data["h3-leading"] + ", " + stlfy.util.rgb2hex(data["h3-text-colour"]));
-		$("#result-header-4-dt").find("span:first").text(data["h4-font"] + ", " + data["h4-font-style"] + ", " + data["h4-font-size"] + ", " + data["h4-leading"] + ", " + stlfy.util.rgb2hex(data["h4-text-colour"]));
-		$("#result-header-5-dt").find("span:first").text(data["h5-font"] + ", " + data["h5-font-style"] + ", " + data["h5-font-size"] + ", " + data["h5-leading"] + ", " + stlfy.util.rgb2hex(data["h5-text-colour"]));
-		$("#result-header-6-dt").find("span:first").text(data["h6-font"] + ", " + data["h6-font-style"] + ", " + data["h6-font-size"] + ", " + data["h6-leading"] + ", " + stlfy.util.rgb2hex(data["h6-text-colour"]));
-*/
 		setStyle($("#result-header-1-dt"), $("#result-header-1-dd"), data, "h1");
 		setStyle($("#result-header-2-dt"), $("#result-header-2-dd"), data, "h2");
 		setStyle($("#result-header-3-dt"), $("#result-header-3-dd"), data, "h3");
@@ -140,8 +132,7 @@
 
 		$.each(data["img-paths"], function(i, el){
 			$("#image-holder-" + (i+1)).find("img").attr("src", el);
-		});
-		
+		});		
 
 		dom.homepageImgHolder.empty().append($("<img />", {"src" : data["thumbPath"]}));
 		_gaq.push(['_trackEvent', 'home', 'search-retrieved', currQueryUrl]);
