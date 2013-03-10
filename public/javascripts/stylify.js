@@ -40,6 +40,14 @@
 
 	stlfy.init = function(){
 
+		dom.inputQueryUrl.on("blur keypress", function(event){			
+			if(event.type != "keypress" || event.which == 13){
+				if(dom.inputQueryUrl.val().indexOf("://") == -1){
+					dom.inputQueryUrl.val("http://" + dom.inputQueryUrl.val());
+				}
+			}
+		});
+
 		dom.formQueryUrl.on("submit", function(event){
 			event.preventDefault();
 			currQueryUrl = dom.inputQueryUrl.val();
@@ -112,8 +120,8 @@
 
 	var setStyle = function(elText, elStyle, data, dataBase){
 		elText.find("span:first").text(data[dataBase + "-font"] + ", " + data[dataBase + "-font-style"] + ", " + data[dataBase + "-font-size"] + ", " + data[dataBase + "-leading"] + ", " + stlfy.util.rgb2hex(data[dataBase + "-text-colour"]));
-		elText.fadeTo(200, (data[dataBase + "-font"] == "N/A") ? "0.3" : "1");
-		elStyle.fadeTo(200, (data[dataBase + "-font"] == "N/A") ? "0.3" : "1");
+		elText.fadeTo(200, (data[dataBase + "-font"] == "N/A") ? "0.2" : "1");
+		elStyle.fadeTo(200, (data[dataBase + "-font"] == "N/A") ? "0.2" : "1");
 		elStyle.css({
 			"font-family" : data[dataBase + "-font"]
 			,"font-style" : data[dataBase + "-font-style"]
@@ -130,6 +138,8 @@
 		setColor(4, data["h2-text-colour"]);
 		setColor(5, data["p-text-colour"]);
 		setColor(6, data["a-text-colour"]);
+		setColor(7, data["h3-text-colour"]);
+		setColor(8, data["h4-text-colour"]);
 
 		setStyle($("#result-header-1-dt"), $("#result-header-1-dd"), data, "h1");
 		setStyle($("#result-header-2-dt"), $("#result-header-2-dd"), data, "h2");
@@ -142,7 +152,14 @@
 		$("#result-links-dd").css({"color":data["a-text-colour"]})
 
 		$.each(data["img-paths"], function(i, el){
-			$("#image-holder-" + (i+1)).find("img").attr("src", el);
+			var imgHolder = $("#image-holder-" + (i+1));
+			imgHolder.children("img").on("load",function(){
+				console.log("this", this);
+				$(this).off("load");
+				imgHolder.children("span").text(this.naturalWidth + " x " + this.naturalHeight + " px");
+
+			}).attr("src", el);
+			
 		});		
 
 		dom.homepageImgHolder.empty().append($("<img />", {"src" : data["thumbPath"]}));
