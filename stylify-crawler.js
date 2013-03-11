@@ -9,6 +9,11 @@ phantom.cookiesEnabled = false;
 page.zoomFactor = 1;
 page.viewportSize = { width: 1024, height: 768 };
 
+var config = {
+	tempImgPath : "public/temp-img/",
+	jQueryPath : "lib/jquery.1.8.3.min.js"
+};
+
 
 /*error tracing*/
 phantom.onError = function(msg, trace) {
@@ -145,17 +150,16 @@ if (args.length === 0) {
 	            console.log('FAIL to load the address');
 	            phantom.exit();
 	        } else {
-	        	if(page.injectJs("lib/jquery.1.8.3.min.js")){
+	        	if(page.injectJs(config.jQueryPath)){
 		    		var result = processing.parsePage(page, address)
 		    			,resultArr = []
-		    			,imgPath = "public/images/thumbs/" + utils.makeFilename(address) + '.png'
-		    		page.render(imgPath);
-		    		
+		    			,imgPath = config.tempImgPath + utils.makeFilename(address) + '.png';
 					for(var arg in result){
 						resultArr.push(utils.renderJsonNode(arg, result[arg]));
 					}
 					resultArr.push('"thumbPath":"' + imgPath.replace("public/", "") + '"');
 					console.log("{"+resultArr.join(",")+"}");
+					page.render(imgPath);
 		    		phantom.exit();
 				}else{
 					console.log("ERROR LOADING JQUERY");

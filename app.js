@@ -1,16 +1,17 @@
 
-/**
-* Module dependencies.
-*/
-
+/* Module dependencies.*/
 var express = require('express')
-  , routes = require('./routes')
-  , routesAbout = require('./routes/about')
   , http = require('http')
   , path = require('path')
+  , fs = require('fs')
   , childProcess = require('child_process')
-  , binPath = "vendor/phantomjs/bin/phantomjs"
-  , phantomFilePath = "stylify-crawler.js";
+
+/* Variables / Config */
+var config = {
+   binPath : "vendor/phantomjs/bin/phantomjs"
+  , phantomFilePath : "stylify-crawler.js"
+  , screenshotCacheTime : 5000 //in ms (1000ms = 1 sec)
+};
 
 var app = express();
 
@@ -32,29 +33,45 @@ app.configure('development', function(){
 });
 
 
-function isValidURL(url){
-  var urlRegEx = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-
-  if(urlRegEx.test(url)){
-    return true;
-  }else{
-    return false;
+var utils = {
+  isValidURL : function(url){
+    var urlRegEx = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+    if(urlRegEx.test(url)){
+      return true;
+    }else{
+      return false;
+    }
+  },
+  deleteFile : function(filePath){
+    fs.unlink(filePath, function(){
+      console.log("file deleted", filePath, arguments);
+    });
   }
-};
+}
 
-app.get('/', routes.index);
 
-app.get('/about', routesAbout.about);
+/* Routes */
+app.get('/', function(req, res){
+   res.render('index', { title: 'Stylify' });
+});
+
+app.get('/about', function(req, res){
+   res.render('index', { title: 'About Stylify' });
+});
 
 app.get('/query', function(req, res){
   var url = req.query["url"];
-  if(url && isValidURL(url)){
-    var childArgs = [phantomFilePath, req.query["url"]];
-    childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
-      if(err || stderr){        
+  if(url && utils.isValidURL(url)){
+    var childArgs = [config.phantomFilePath, req.query["url"]];
+    var jsonResponse = {};
+    childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
+      if(err || stderr){
         res.json(400, { "error": stderr })
       } else{
-        res.json(JSON.parse(stdout));
+        jsonResponse = JSON.parse(stdout);
+        res.json(jsonResponse);
+        //delete thumbnail after a bit
+        setTimeout(utils.deleteFile, config.screenshotCacheTime, path.join(__dirname, "public", jsonResponse.thumbPath));
       }
     });
   }else{

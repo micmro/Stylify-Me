@@ -64,7 +64,8 @@
 			}
 			
 			if(stlfy.util.isUrl(url)){
-				
+				dom.inputQueryUrl.blur();
+				dom.buttonQueryUrl.blur();
 				stlfy.queryUrl(url);
 			}else{
 				_gaq.push(['_trackEvent', 'home', 'invalid-search', currQueryUrl]);
@@ -154,10 +155,8 @@
 		$.each(data["img-paths"], function(i, el){
 			var imgHolder = $("#image-holder-" + (i+1));
 			imgHolder.children("img").on("load",function(){
-				console.log("this", this);
 				$(this).off("load");
 				imgHolder.children("span").text(this.naturalWidth + " x " + this.naturalHeight + " px");
-
 			}).attr("src", el);
 			
 		});		
