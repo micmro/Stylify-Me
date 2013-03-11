@@ -132,6 +132,7 @@ h2 {padding-top: 18px; font-weight: bold; font-size: 14px; line-height: 36px; co
 .image-holder span {position: absolute; padding-top: 1em; left: 0; right: 0; display: block; text-align: center;}
 
 #homepage-img-holder { margin-bottom: 2em; width: 100%;}
+#homepage-img-holder img {max-width:100%;}
 
 #loadingOverlay {position: fixed; top:0; left: 0; bottom: 0; right: 0; width: 100%; height: 100%; background: rgba(255,255,255, 0.5) url(../images/ajax-loader.gif) center center no-repeat;}
 

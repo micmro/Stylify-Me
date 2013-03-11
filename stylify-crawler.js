@@ -72,7 +72,7 @@ var processing = {
 				}
 			};
 
-			var baseSelector = ($("[role=main]:first").exists()||$("#main").exists()||$("body"));
+			var baseSelector = ($("[role=main]:first").exists()||$("#main").exists()||$("#content").exists()||$("body"));
 			var h1 = (baseSelector.find("h1:first").exists()||$("h1:first"));
 			var h2 = (baseSelector.find("h2:first").exists()||$("h2:first"));
 			var h3 = (baseSelector.find("h3:first").exists()||$("h3:first"));
