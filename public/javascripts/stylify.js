@@ -155,7 +155,7 @@
 		$.each(data["img-paths"], function(i, el){
 			var imgHolder = $("#image-holder-" + (i+1));
 			imgHolder.children("img").on("load",function(){
-				$(this).off("load");
+				$(this).off("load").css("width", "auto");
 				imgHolder.children("span").text(this.naturalWidth + " x " + this.naturalHeight + " px");
 			}).attr("src", el);
 			

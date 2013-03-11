@@ -10,7 +10,7 @@ var express = require('express')
 var config = {
    binPath : "vendor/phantomjs/bin/phantomjs"
   , phantomFilePath : "stylify-crawler.js"
-  , screenshotCacheTime : 5000 //in ms (1000ms = 1 sec)
+  , screenshotCacheTime : 60000 * 2 //in ms (1000ms = 1 sec)
 };
 
 var app = express();
