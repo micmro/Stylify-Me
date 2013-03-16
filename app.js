@@ -31,6 +31,10 @@ app.configure(function(){
 app.configure('development', function(){
   app.use(express.errorHandler());
 });
+app.use(function(err, req, res, next){
+  console.error(err.stack);
+  res.send(500, '<h1>Something\'s gone wrong!</h1><p>Please try to refresh the page</p>');
+});
 
 
 var utils = {
@@ -56,7 +60,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/about', function(req, res){
-   res.render('index', { title: 'About Stylify' });
+   res.render('about', { title: 'About Stylify' });
 });
 
 app.get('/query', function(req, res){
