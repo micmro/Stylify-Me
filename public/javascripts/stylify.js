@@ -133,24 +133,26 @@
 	}
 
 	stlfy.renderResult = function(data){
-		var colours = [data["background-colour"], data["main-background-colour"], data["base-text-colour"], data["h1-text-colour"],  data["h2-text-colour"], data["p-text-colour"],data["a-text-colour"],data["h3-text-colour"],data["h4-text-colour"]];
+		var colours = [data["background-colour"], data["main-background-colour"], data["base-text-colour"]];
 		var coloursUnique = [];
+		var allColours = (data["colours"]||[]).sort(function SortByName(a, b){
+		  return ((b[1] < a[1]) ? -1 : ((b[1] > a[1]) ? 1 : 0));
+		});
 		$.each(colours, function(i, el){
 		    if($.inArray(el, coloursUnique) === -1){
 		    	coloursUnique.push(el);
 		    }
 		});
+
+		$.each(allColours, function(key, val){
+			if($.inArray(val[0], coloursUnique) === -1){				
+		    	coloursUnique.push(val[0]);
+		    }			
+		});
+		
 		for(var i = 0; i < 8; i++){
 			setColor(i+1, coloursUnique[i]);
 		}
-		/*setColor(1, data["background-colour"]);
-		setColor(2, data["base-text-colour"]);
-		setColor(3, data["h1-text-colour"]);	
-		setColor(4, data["h2-text-colour"]);
-		setColor(5, data["p-text-colour"]);
-		setColor(6, data["a-text-colour"]);
-		setColor(7, data["h3-text-colour"]);
-		setColor(8, data["h4-text-colour"]);*/
 
 		setStyle($("#result-header-1-dt"), $("#result-header-1-dd"), data, "h1");
 		setStyle($("#result-header-2-dt"), $("#result-header-2-dd"), data, "h2");

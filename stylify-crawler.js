@@ -106,15 +106,14 @@ var processing = {
 					}
 				}
 			});
-
-			for (var color in colours) {
-				coloursReturn.push([color, coloursNumPair[color]]);
-			}
+			$.each(colours, function(i,el){
+				coloursReturn.push([el,coloursNumPair[el]]);
+			});
 
 
 			return {
 				"title" : document.title
-				, "colours" : coloursNumPair
+				, "colours" : coloursReturn
 				, "h1-text-colour" : h1.css("color")||naMsg
 				, "h2-text-colour" : h2.css("color")||naMsg
 				, "h3-text-colour" : h3.css("color")||naMsg

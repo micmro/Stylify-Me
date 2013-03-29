@@ -47,9 +47,13 @@ var utils = {
     }
   },
   deleteFile : function(filePath){
+    try{
     fs.unlink(filePath, function(){
       console.log("file deleted", filePath, arguments);
     });
+    }catch(e){
+      console.log("file delete error", e);
+    }
   }
 }
 
@@ -68,14 +72,19 @@ app.get('/query', function(req, res){
   if(url && utils.isValidURL(url)){
     var childArgs = [config.phantomFilePath, req.query["url"]];
     var jsonResponse = {};
+    
     childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
-      if(err || stderr){
-        res.json(400, { "error": stderr })
-      } else{
-        jsonResponse = JSON.parse(stdout);
-        res.json(jsonResponse);
-        //delete thumbnail after a bit
-        setTimeout(utils.deleteFile, config.screenshotCacheTime, path.join(__dirname, "public", jsonResponse.thumbPath));
+      try{
+        if(err || stderr){
+          res.json(400, { "error": stderr })
+        } else{
+          jsonResponse = JSON.parse(stdout);
+          res.json(jsonResponse);
+          //delete thumbnail after a bit
+          setTimeout(utils.deleteFile, config.screenshotCacheTime, path.join(__dirname, "public", jsonResponse.thumbPath));
+        }
+      }catch(e){
+        console.log(e);
       }
     });
   }else{
