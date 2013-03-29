@@ -87,7 +87,7 @@ a:hover, a:focus { text-decoration: underline; }
 	background: linear-gradient(to bottom,  rgba(34,34,34,1) 0%,rgba(0,0,0,1) 100%);
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222222', endColorstr='#000000',GradientType=0 );
 }
-#main-header button:hover, #main-header button:focus { cursor: pointer; outline: 0; border:0; background: #222; -webkit-box-shadow: inset 0 1px 5px rgba(0,0,0,1); -moz-box-shadow: inset 0 1px 5px rgba(0,0,0,1); box-shadow: inset 0 1px 5px rgba(0,0,0,1)}
+#main-header button:hover, #main-header button:focus { cursor: pointer; outline: 0; border:0; background: #52a8ec; -webkit-box-shadow: inset 0 1px 5px rgba(0,0,0,.5); -moz-box-shadow: inset 0 1px 5px rgba(0,0,0,.5); box-shadow: inset 0 1px 5px rgba(0,0,0,.5)}
 
 #link-about {float: right; text-align: right; color: #000; font-weight: bold; font-size: 14px; padding-top: 35px;}
 

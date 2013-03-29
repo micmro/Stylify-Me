@@ -110,12 +110,12 @@
 
 	var setColor = function(id, color){
 		var holder = $("#color-" + id);
-		if(color){
+		if(color && color != "N/A"){
 			holder.fadeIn();
 			holder.find(".swatch-holder").css("background", color);
 			holder.find(".colour-hex").text(stlfy.util.rgb2hex(color));
 		}else{
-			holder.faceOut();
+			holder.fadeOut();
 		}
 	};
 
@@ -133,14 +133,24 @@
 	}
 
 	stlfy.renderResult = function(data){
-		setColor(1, data["background-colour"]);
+		var colours = [data["background-colour"], data["main-background-colour"], data["base-text-colour"], data["h1-text-colour"],  data["h2-text-colour"], data["p-text-colour"],data["a-text-colour"],data["h3-text-colour"],data["h4-text-colour"]];
+		var coloursUnique = [];
+		$.each(colours, function(i, el){
+		    if($.inArray(el, coloursUnique) === -1){
+		    	coloursUnique.push(el);
+		    }
+		});
+		for(var i = 0; i < 8; i++){
+			setColor(i+1, coloursUnique[i]);
+		}
+		/*setColor(1, data["background-colour"]);
 		setColor(2, data["base-text-colour"]);
 		setColor(3, data["h1-text-colour"]);	
 		setColor(4, data["h2-text-colour"]);
 		setColor(5, data["p-text-colour"]);
 		setColor(6, data["a-text-colour"]);
 		setColor(7, data["h3-text-colour"]);
-		setColor(8, data["h4-text-colour"]);
+		setColor(8, data["h4-text-colour"]);*/
 
 		setStyle($("#result-header-1-dt"), $("#result-header-1-dd"), data, "h1");
 		setStyle($("#result-header-2-dt"), $("#result-header-2-dd"), data, "h2");
@@ -152,10 +162,12 @@
 
 		$("#result-links-dd").css({"color":data["a-text-colour"]})
 
+		$("image-holder").hide();
+
 		$.each(data["img-paths"], function(i, el){
 			var imgHolder = $("#image-holder-" + (i+1));
 			imgHolder.children("img").on("load",function(){
-				$(this).off("load").css("width", "auto");
+				$(this).off("load").css("width", "auto").fadeIn();
 				imgHolder.children("span").text(this.naturalWidth + " x " + this.naturalHeight + " px");
 			}).attr("src", el);
 			

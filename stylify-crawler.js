@@ -32,13 +32,6 @@ var utils = {
 	makeFilename : function(url){
 		return  url.replace(/http:\/\//,"").replace(/[\/:/]/g,"_");
 	},
-	renderJsonNode : function(key, val){
-		if(typeof val == "object" && val.join != undefined){
-			return '"' + key + '": ["' + val.join('","') + '"]';
-		} else {
-			return '"' + key + '":"' + val + '"';
-		}
-	},
 	isValidURL : function(url) {
 		var urlRegEx = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
 		if(urlRegEx.test(url)){
@@ -85,8 +78,43 @@ var processing = {
 			var naMsg = "N/A";
 
 
+			var colours = [];
+			var coloursNumPair = {};
+			var coloursReturn = [];
+			//color properties to iterate through
+			var colorProperties = ['color', 'background-color'];
+
+			//iterate through every element
+			$('*').each(function() {
+				var color = null;
+
+				for (var prop in colorProperties) {
+					prop = colorProperties[prop];
+
+					//if we can't find this property or it's null, continue
+					if (!$(this).css(prop)) continue; 
+
+					//create RGBColor object
+					color = $(this).css(prop);
+
+					//colours.push(color);
+					if(coloursNumPair[color]){
+						coloursNumPair[color] = coloursNumPair[color]+1;
+					}else{
+						coloursNumPair[color] = 1;
+						colours.push(color);
+					}
+				}
+			});
+
+			for (var color in colours) {
+				coloursReturn.push([color, coloursNumPair[color]]);
+			}
+
+
 			return {
 				"title" : document.title
+				, "colours" : coloursNumPair
 				, "h1-text-colour" : h1.css("color")||naMsg
 				, "h2-text-colour" : h2.css("color")||naMsg
 				, "h3-text-colour" : h3.css("color")||naMsg
@@ -130,8 +158,11 @@ var processing = {
 				
 				, "p-text-colour" : p.css("color")||naMsg
 				, "a-text-colour" : a.css("color")||naMsg		
-				, "background-colour" : baseSelector.css("background-color")||naMsg
+				, "main-background-colour" : baseSelector.css("background-color")||naMsg
+				, "background-img" : $("body").css("background-image")||naMsg
+				, "background-colour" : $("body").css("background-color")||naMsg
 				, "img-paths" : imgPaths||naMsg
+				
 			};
 		});
 
@@ -152,13 +183,11 @@ if (args.length === 0) {
 	        } else {
 	        	if(page.injectJs(config.jQueryPath)){
 		    		var result = processing.parsePage(page, address)
-		    			,resultArr = []
 		    			,imgPath = config.tempImgPath + utils.makeFilename(address) + '.png';
-					for(var arg in result){
-						resultArr.push(utils.renderJsonNode(arg, result[arg]));
-					}
-					resultArr.push('"thumbPath":"' + imgPath.replace("public/", "") + '"');
-					console.log("{"+resultArr.join(",")+"}");
+
+					result.thumbPath =  imgPath.replace("public/", "");
+					console.log(JSON.stringify(result));
+					
 					page.render(imgPath);
 		    		phantom.exit();
 				}else{
