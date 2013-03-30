@@ -101,9 +101,11 @@ a:hover, a:focus { text-decoration: underline; }
 /*main*/
 #main-holder {background-color: #fff; position: relative; padding: 18px 0;}
 
-#btn-download {position: absolute; top:18px; right: 10px; padding:6px 10px; background: #000; border:0; color: #fff; font-size: 14px; font-weight: bold; cursor: pointer; -webkit-border-radius: 8px; -moz-border-radius: 8px; border-radius: 8px;}
-#btn-download i {float: left; width: 12px; height: 12px; margin:3px 7px 0 0; background: url(../images/down-btn.png) 0 0 no-repeat;}
-#btn-download[disabled] {background: #e1e1e1;  cursor: default;}
+.action-button {position: absolute; top:18px; padding:6px 10px; background: #000; border:0; color: #fff; font-size: 14px; font-weight: bold; cursor: pointer; -webkit-border-radius: 8px; -moz-border-radius: 8px; border-radius: 8px;}
+.action-button i {float: left; width: 12px; height: 12px; margin:3px 7px 0 0; background: url(../images/down-btn.png) 0 0 no-repeat;}
+.action-button[disabled] {background: #e1e1e1;  cursor: default;}
+#btn-download { right: 90px;}
+#btn-print { right: 10px;}
 
 h1 { font-weight: normal; padding-top: 18px; }
 h2 {padding-top: 18px; font-weight: bold; font-size: 14px; line-height: 36px; color:#959595; border-bottom:solid 1px #959595; }

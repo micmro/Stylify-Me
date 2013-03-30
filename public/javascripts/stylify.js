@@ -31,6 +31,8 @@
 			body : $(document.body),
 			inputQueryUrl : $("#input-stylify"),
 			buttonQueryUrl : $("#btn-stylify"),
+			buttonPrint : $("#btn-print"),
+			buttonDownload : $("#btn-download"),			
 			formQueryUrl : $("#form-stylify"),
 			homepageImgHolder : $("#homepage-img-holder"),
 			loaderOverlay : $("#loadingOverlay"),
@@ -79,6 +81,17 @@
 		dom.backToTopLink.on("click", function(event) {
 			event.preventDefault();
 			$("html, body").animate({ scrollTop: 0 }, "slow");
+		});
+
+		
+		dom.buttonDownload.on("click", function(){
+			_gaq.push(['_trackEvent', 'home', 'download-clicked', currQueryUrl]);
+			alert("Sorry, this feature is not implmented yet.");
+		});
+
+		dom.buttonPrint.on("click", function(){
+			_gaq.push(['_trackEvent', 'home', 'print-clicked', currQueryUrl]);
+			window.print();
 		});
 
 		$(window).on('scroll', function(){
