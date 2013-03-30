@@ -19,6 +19,9 @@
 			    function hex(x) {
 			        return ("0" + parseInt(x).toString(16)).slice(-2);
 			    }
+			    if(rgbArr[4] && rgbArr[3] == "0"){
+			    	return "transparent";
+			    }
 			    return "#" + hex(rgbArr[1]) + hex(rgbArr[2]) + hex(rgbArr[3]);
 			}
 		}		
@@ -108,12 +111,12 @@
 		$.getJSON("/query?url="+ url, stlfy.renderResult);
 	};
 
-	var setColor = function(id, color){
+	var setColour = function(id, colour){
 		var holder = $("#color-" + id);
-		if(color && color != "N/A"){
+		if(colour && colour != "N/A"){
 			holder.fadeIn();
-			holder.find(".swatch-holder").css("background", color);
-			holder.find(".colour-hex").text(stlfy.util.rgb2hex(color));
+			holder.find(".swatch-holder").css("background", colour);
+			holder.find(".colour-hex").text(colour);
 		}else{
 			holder.fadeOut();
 		}
@@ -121,9 +124,9 @@
 
 	var setStyle = function(elText, elStyle, data, dataBase){
 		elText.find("span:first").text(data[dataBase + "-font"] + ", " + data[dataBase + "-font-style"] + ", " + data[dataBase + "-font-size"] + ", " + data[dataBase + "-leading"] + ", " + stlfy.util.rgb2hex(data[dataBase + "-text-colour"]));
-		elText.fadeTo(200, (data[dataBase + "-font"] == "N/A") ? "0.2" : "1");
-		elStyle.fadeTo(200, (data[dataBase + "-font"] == "N/A") ? "0.2" : "1");
-		elStyle.css({
+		elText.children().fadeTo(200, (data[dataBase + "-font"] == "N/A") ? "0.2" : "1");
+		elStyle.children().fadeTo(200, (data[dataBase + "-font"] == "N/A") ? "0.2" : "1");
+		elStyle.children().css({
 			"font-family" : data[dataBase + "-font"]
 			,"font-style" : data[dataBase + "-font-style"]
 			,"font-size" : data[dataBase + "-font-size"]
@@ -134,24 +137,26 @@
 
 	stlfy.renderResult = function(data){
 		var colours = [data["background-colour"], data["main-background-colour"], data["base-text-colour"]];
-		var coloursUnique = [];
+		var coloursUnique = [], tempColour;
 		var allColours = (data["colours"]||[]).sort(function SortByName(a, b){
 		  return ((b[1] < a[1]) ? -1 : ((b[1] > a[1]) ? 1 : 0));
 		});
 		$.each(colours, function(i, el){
-		    if($.inArray(el, coloursUnique) === -1){
-		    	coloursUnique.push(el);
+			tempColour = stlfy.util.rgb2hex(el);
+		    if($.inArray(tempColour, coloursUnique) === -1 && tempColour != "transparent"){
+		    	coloursUnique.push(tempColour);
 		    }
 		});
 
 		$.each(allColours, function(key, val){
-			if($.inArray(val[0], coloursUnique) === -1){				
-		    	coloursUnique.push(val[0]);
+			tempColour = stlfy.util.rgb2hex(val[0]);
+			if($.inArray(tempColour, coloursUnique) === -1 && tempColour != "transparent"){				
+		    	coloursUnique.push(tempColour);
 		    }			
 		});
 		
 		for(var i = 0; i < 8; i++){
-			setColor(i+1, coloursUnique[i]);
+			setColour(i+1, coloursUnique[i]);
 		}
 
 		setStyle($("#result-header-1-dt"), $("#result-header-1-dd"), data, "h1");
