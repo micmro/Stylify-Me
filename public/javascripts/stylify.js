@@ -72,7 +72,7 @@
 			if(stlfy.util.isUrl(currQueryUrl)){
 				dom.inputQueryUrl.blur();
 				dom.buttonQueryUrl.blur();
-				stlfy.queryUrl(url);
+				stlfy.queryUrl(currQueryUrl);
 			}else{
 				_gaq.push(['_trackEvent', 'home', 'invalid-search', currQueryUrl]);
 				alert("this does not seem to be valid url");
