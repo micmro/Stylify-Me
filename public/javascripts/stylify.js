@@ -69,7 +69,7 @@
 				return
 			}
 			
-			if(stlfy.util.isUrl(url)){
+			if(stlfy.util.isUrl(currQueryUrl)){
 				dom.inputQueryUrl.blur();
 				dom.buttonQueryUrl.blur();
 				stlfy.queryUrl(url);
