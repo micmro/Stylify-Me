@@ -19,10 +19,17 @@
 			    function hex(x) {
 			        return ("0" + parseInt(x).toString(16)).slice(-2);
 			    }
-			    if(rgbArr[4] && rgbArr[3] == "0"){
+			    if(rgbArr && rgbArr[4] && rgbArr[4] == "0"){
 			    	return "transparent";
 			    }
 			    return "#" + hex(rgbArr[1]) + hex(rgbArr[2]) + hex(rgbArr[3]);
+			},
+			formatUrl : function(url){
+				url = $.trim(url).toLowerCase();
+				if(url.indexOf("http://") != 0 && url.indexOf("https://") != 0){
+					url = "http://" + url;
+				}
+				return url;
 			}
 		}		
 	};
@@ -55,17 +62,11 @@
 
 		dom.formQueryUrl.on("submit", function(event){
 			event.preventDefault();
-			currQueryUrl = dom.inputQueryUrl.val();
+			currQueryUrl = stlfy.util.formatUrl(dom.inputQueryUrl.val());
 			_gaq.push(['_trackEvent', 'home', 'search', currQueryUrl]);
 			if(isQuerying){
 				_gaq.push(['_trackEvent', 'home', 'search-still-querying', currQueryUrl]);
 				return
-			}
-			
-
-			var url = $.trim(currQueryUrl).toLowerCase();
-			if(url.indexOf("http://") != 0 && url.indexOf("https://") != 0){
-				url = "http://" + url;
 			}
 			
 			if(stlfy.util.isUrl(url)){
@@ -121,7 +122,12 @@
 
 	stlfy.queryUrl = function(url){
 		stlfy.setQueryInProgressState();
-		$.getJSON("/query?url="+ url, stlfy.renderResult);
+		$.getJSON("/query?url="+ url, stlfy.renderResult).error(function(){		
+			_gaq.push(['_trackEvent', 'home', 'search-error', currQueryUrl]);
+			console.error(arguments);
+			alert("Could not query site, please try again.");
+			stlfy.setQueryDoneStat();
+		});
 	};
 
 	var setColour = function(id, colour){
