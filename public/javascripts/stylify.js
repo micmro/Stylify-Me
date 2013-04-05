@@ -124,9 +124,8 @@
 		stlfy.setQueryInProgressState();
 		$.getJSON("/query?url="+ url, stlfy.renderResult).error(function(){		
 			_gaq.push(['_trackEvent', 'home', 'search-error', currQueryUrl]);
-			console.error(arguments);
 			alert("Could not query site, please try again.");
-			stlfy.setQueryDoneStat();
+			stlfy.setQueryDoneState();
 		});
 	};
 
