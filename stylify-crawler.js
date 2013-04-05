@@ -25,6 +25,7 @@ phantom.onError = function(msg, trace) {
         });
     }
     console.error(msgStack.join('\n'));
+    phantom.exit();
 };
 
 
@@ -42,133 +43,134 @@ var utils = {
 	}
 };
 
-var processing = {
-	parsePage : function(page, address){
-		var pageAttributes = page.evaluate(function () {
-			var images = $("img");
-			var imgPaths = [];
-			if(images.length >= 3){
-				imgPaths.push(images[parseInt(images.length/2)-1].src);
-				imgPaths.push(images[parseInt(images.length/2)].src);
-				imgPaths.push(images[parseInt(images.length/2)+1].src);
+function parsePage (page, address){
+	var pageAttributes = page.evaluate(function () {
+		var images = $jq("img");
+		var imgPaths = [];
+		if(images.length >= 3){
+			imgPaths.push(images[parseInt(images.length/2)-1].src);
+			imgPaths.push(images[parseInt(images.length/2)].src);
+			imgPaths.push(images[parseInt(images.length/2)+1].src);
+		}else{
+			images.each(function(i, el){
+				imgPaths.push(el.src);
+			});
+		}
+
+		$jq.fn.exists = function(){
+			if(this.length>0){
+			    return this;
 			}else{
-				images.each(function(i, el){
-					imgPaths.push(el.src);
-				});
+				return false; 
 			}
+		};
 
-			$.fn.exists = function(){
-				if(this.length>0){
-				    return this;
+		var baseSelector = ($jq("[role=main]:first").exists()||$jq("#main").exists()||$jq("#content").exists()||$jq("body"));
+		var h1 = (baseSelector.find("h1:first").exists()||$jq("h1:first"));
+		var h2 = (baseSelector.find("h2:first").exists()||$jq("h2:first"));
+		var h3 = (baseSelector.find("h3:first").exists()||$jq("h3:first"));
+		var h4 = (baseSelector.find("h4:first").exists()||$jq("h4:first"));
+		var h5 = (baseSelector.find("h5:first").exists()||$jq("h5:first"));
+		var h6 = (baseSelector.find("h6:first").exists()||$jq("h6:first"));
+		var p = (baseSelector.find("p:first").exists()||$jq("p:first"));
+		var a = (baseSelector.find("a:first").exists()||$jq("a:first"));
+		var body = $jq("body");
+		var naMsg = "N/A";
+
+
+		var colours = [];
+		var coloursNumPair = {};
+		var coloursReturn = [];
+		//color properties to iterate through
+		var colorProperties = ['color', 'background-color'];
+
+		//iterate through every element
+		$jq('*').each(function() {
+			var color = null;
+
+			for (var prop in colorProperties) {
+				prop = colorProperties[prop];
+
+				//if we can't find this property or it's null, continue
+				if (!$jq(this).css(prop)) continue; 
+
+				//create RGBColor object
+				color = $jq(this).css(prop);
+
+				//colours.push(color);
+				if(coloursNumPair[color]){
+					coloursNumPair[color] = coloursNumPair[color]+1;
 				}else{
-					return false; 
+					coloursNumPair[color] = 1;
+					colours.push(color);
 				}
-			};
-
-			var baseSelector = ($("[role=main]:first").exists()||$("#main").exists()||$("#content").exists()||$("body"));
-			var h1 = (baseSelector.find("h1:first").exists()||$("h1:first"));
-			var h2 = (baseSelector.find("h2:first").exists()||$("h2:first"));
-			var h3 = (baseSelector.find("h3:first").exists()||$("h3:first"));
-			var h4 = (baseSelector.find("h4:first").exists()||$("h4:first"));
-			var h5 = (baseSelector.find("h5:first").exists()||$("h5:first"));
-			var h6 = (baseSelector.find("h6:first").exists()||$("h6:first"));
-			var p = (baseSelector.find("p:first").exists()||$("p:first"));
-			var a = (baseSelector.find("a:first").exists()||$("a:first"));
-			var body = $("body");
-			var naMsg = "N/A";
-
-
-			var colours = [];
-			var coloursNumPair = {};
-			var coloursReturn = [];
-			//color properties to iterate through
-			var colorProperties = ['color', 'background-color'];
-
-			//iterate through every element
-			$('*').each(function() {
-				var color = null;
-
-				for (var prop in colorProperties) {
-					prop = colorProperties[prop];
-
-					//if we can't find this property or it's null, continue
-					if (!$(this).css(prop)) continue; 
-
-					//create RGBColor object
-					color = $(this).css(prop);
-
-					//colours.push(color);
-					if(coloursNumPair[color]){
-						coloursNumPair[color] = coloursNumPair[color]+1;
-					}else{
-						coloursNumPair[color] = 1;
-						colours.push(color);
-					}
-				}
-			});
-			$.each(colours, function(i,el){
-				coloursReturn.push([el,coloursNumPair[el]]);
-			});
-
-
-			return {
-				"title" : document.title
-				, "colours" : coloursReturn
-				, "h1-text-colour" : h1.css("color")||naMsg
-				, "h2-text-colour" : h2.css("color")||naMsg
-				, "h3-text-colour" : h3.css("color")||naMsg
-				, "h4-text-colour" : h4.css("color")||naMsg
-				, "h5-text-colour" : h5.css("color")||naMsg
-				, "h6-text-colour" : h6.css("color")||naMsg
-
-				, "h1-font" : h1.css("font-family")||naMsg
-				, "h2-font" : h2.css("font-family")||naMsg
-				, "h3-font" : h3.css("font-family")||naMsg
-				, "h4-font" : h4.css("font-family")||naMsg
-				, "h5-font" : h5.css("font-family")||naMsg
-				, "h6-font" : h6.css("font-family")||naMsg
-				
-				, "h1-font-size" : h1.css("font-size")||naMsg
-				, "h2-font-size" : h2.css("font-size")||naMsg
-				, "h3-font-size" : h3.css("font-size")||naMsg
-				, "h4-font-size" : h4.css("font-size")||naMsg
-				, "h5-font-size" : h5.css("font-size")||naMsg
-				, "h6-font-size" : h6.css("font-size")||naMsg
-				
-				, "h1-leading" : h1.css("line-height")||naMsg
-				, "h2-leading" : h2.css("line-height")||naMsg
-				, "h3-leading" : h3.css("line-height")||naMsg
-				, "h4-leading" : h4.css("line-height")||naMsg
-				, "h5-leading" : h5.css("line-height")||naMsg
-				, "h6-leading" : h6.css("line-height")||naMsg
-				
-				, "h1-font-style" : h1.css("font-style")||naMsg
-				, "h2-font-style" : h2.css("font-style")||naMsg
-				, "h3-font-style" : h3.css("font-style")||naMsg
-				, "h4-font-style" : h4.css("font-style")||naMsg
-				, "h5-font-style" : h5.css("font-style")||naMsg
-				, "h6-font-style" : h6.css("font-style")||naMsg
-
-				, "base-text-colour" : baseSelector.css("color")||naMsg
-				, "base-font" : baseSelector.css("font-family")||naMsg
-				, "base-font-size" : baseSelector.css("font-size")||naMsg
-				, "base-leading" : baseSelector.css("line-height")||naMsg
-				, "base-font-style" : baseSelector.css("font-style")||naMsg
-				
-				, "p-text-colour" : p.css("color")||naMsg
-				, "a-text-colour" : a.css("color")||naMsg		
-				, "main-background-colour" : baseSelector.css("background-color")||naMsg
-				, "background-img" : $("body").css("background-image")||naMsg
-				, "background-colour" : $("body").css("background-color")||naMsg
-				, "img-paths" : imgPaths||naMsg
-				
-			};
+			}
+		});
+		$jq.each(colours, function(i,el){
+			coloursReturn.push([el,coloursNumPair[el]]);
 		});
 
-		return pageAttributes;
-	}
+
+		return {
+			"title" : document.title
+			, "colours" : coloursReturn
+			, "h1-text-colour" : h1.css("color")||naMsg
+			, "h2-text-colour" : h2.css("color")||naMsg
+			, "h3-text-colour" : h3.css("color")||naMsg
+			, "h4-text-colour" : h4.css("color")||naMsg
+			, "h5-text-colour" : h5.css("color")||naMsg
+			, "h6-text-colour" : h6.css("color")||naMsg
+
+			, "h1-font" : h1.css("font-family")||naMsg
+			, "h2-font" : h2.css("font-family")||naMsg
+			, "h3-font" : h3.css("font-family")||naMsg
+			, "h4-font" : h4.css("font-family")||naMsg
+			, "h5-font" : h5.css("font-family")||naMsg
+			, "h6-font" : h6.css("font-family")||naMsg
+			
+			, "h1-font-size" : h1.css("font-size")||naMsg
+			, "h2-font-size" : h2.css("font-size")||naMsg
+			, "h3-font-size" : h3.css("font-size")||naMsg
+			, "h4-font-size" : h4.css("font-size")||naMsg
+			, "h5-font-size" : h5.css("font-size")||naMsg
+			, "h6-font-size" : h6.css("font-size")||naMsg
+			
+			, "h1-leading" : h1.css("line-height")||naMsg
+			, "h2-leading" : h2.css("line-height")||naMsg
+			, "h3-leading" : h3.css("line-height")||naMsg
+			, "h4-leading" : h4.css("line-height")||naMsg
+			, "h5-leading" : h5.css("line-height")||naMsg
+			, "h6-leading" : h6.css("line-height")||naMsg
+			
+			, "h1-font-style" : h1.css("font-style")||naMsg
+			, "h2-font-style" : h2.css("font-style")||naMsg
+			, "h3-font-style" : h3.css("font-style")||naMsg
+			, "h4-font-style" : h4.css("font-style")||naMsg
+			, "h5-font-style" : h5.css("font-style")||naMsg
+			, "h6-font-style" : h6.css("font-style")||naMsg
+
+			, "base-text-colour" : baseSelector.css("color")||naMsg
+			, "base-font" : baseSelector.css("font-family")||naMsg
+			, "base-font-size" : baseSelector.css("font-size")||naMsg
+			, "base-leading" : baseSelector.css("line-height")||naMsg
+			, "base-font-style" : baseSelector.css("font-style")||naMsg
+			
+			, "p-text-colour" : p.css("color")||naMsg
+			, "a-text-colour" : a.css("color")||naMsg		
+			, "main-background-colour" : baseSelector.css("background-color")||naMsg
+			, "background-img" : $jq("body").css("background-image")||naMsg
+			, "background-colour" : $jq("body").css("background-color")||naMsg
+			, "img-paths" : imgPaths||naMsg
+			
+		};
+	});
+
+	return pageAttributes;
 };
 
+
+
+//main
 if (args.length === 0) {
     console.log('Usage: color-crawler.js <some URL>');
     phantom.exit();
@@ -181,7 +183,10 @@ if (args.length === 0) {
 	            phantom.exit();
 	        } else {
 	        	if(page.injectJs(config.jQueryPath)){
-		    		var result = processing.parsePage(page, address)
+	        		$jq = window.jQuery;
+    				$jq.noConflict();
+    				
+		    		var result = parsePage(page, address)
 		    			,imgPath = config.tempImgPath + utils.makeFilename(address) + '.png';
 
 					result.thumbPath =  imgPath.replace("public/", "");
