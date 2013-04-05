@@ -22,14 +22,9 @@
 <script>window.jQuery || document.write('<script src="javascripts/jquery-1.9.1.min.js"><\/script>')</script>
 <script src="javascripts/stylify.js"></script>
 <div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1&appId=507703755933652";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+<script src="//connect.facebook.net/en_GB/all.js#xfbml=1&appId=507703755933652"></script>
+<script src="//platform.twitter.com/widgets.js"></script>
+
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -42,6 +37,34 @@
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+
+
+    FB.Event.subscribe('edge.create', function(targetUrl) {
+      _gaq.push(['_trackSocial', 'facebook', 'like', targetUrl]);
+    });
+    FB.Event.subscribe('edge.remove', function(targetUrl) {
+      _gaq.push(['_trackSocial', 'facebook', 'unlike', targetUrl]);
+    });
+    FB.Event.subscribe('message.send', function(targetUrl) {
+      _gaq.push(['_trackSocial', 'facebook', 'send', targetUrl]);
+    });
+
+     function trackTwitter(intent_event) {
+      if (intent_event) {
+        var opt_pagePath;
+        if (intent_event.target && intent_event.target.nodeName == 'IFRAME') {
+              opt_target = extractParamFromUri(intent_event.target.src, 'url');
+        }
+        _gaq.push(['_trackSocial', 'twitter', 'tweet', opt_pagePath]);
+      }
+    }
+
+    //Wrap event bindings - Wait for async js to load
+    twttr.ready(function (twttr) {
+      //event bindings
+      twttr.events.bind('tweet', trackTwitter);
+    });
+
   })();
 
 </script>
