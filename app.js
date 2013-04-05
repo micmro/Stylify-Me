@@ -60,11 +60,11 @@ var utils = {
 
 /* Routes */
 app.get('/', function(req, res){
-   res.render('index', { title: 'Stylify' });
+   res.render('index', { title: 'Stylify Me' });
 });
 
 app.get('/about', function(req, res){
-   res.render('about', { title: 'About Stylify' });
+   res.render('about', { title: 'About Stylify Me' });
 });
 
 app.get('/query', function(req, res){
