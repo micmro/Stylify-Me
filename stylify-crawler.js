@@ -45,7 +45,7 @@ var utils = {
 
 function parsePage (page, address){
 	var pageAttributes = page.evaluate(function () {
-		var images = $jq("img");
+		var images = $("img");
 		var imgPaths = [];
 		if(images.length >= 3){
 			imgPaths.push(images[parseInt(images.length/2)-1].src);
@@ -57,7 +57,7 @@ function parsePage (page, address){
 			});
 		}
 
-		$jq.fn.exists = function(){
+		$.fn.exists = function(){
 			if(this.length>0){
 			    return this;
 			}else{
@@ -65,16 +65,16 @@ function parsePage (page, address){
 			}
 		};
 
-		var baseSelector = ($jq("[role=main]:first").exists()||$jq("#main").exists()||$jq("#content").exists()||$jq("body"));
-		var h1 = (baseSelector.find("h1:first").exists()||$jq("h1:first"));
-		var h2 = (baseSelector.find("h2:first").exists()||$jq("h2:first"));
-		var h3 = (baseSelector.find("h3:first").exists()||$jq("h3:first"));
-		var h4 = (baseSelector.find("h4:first").exists()||$jq("h4:first"));
-		var h5 = (baseSelector.find("h5:first").exists()||$jq("h5:first"));
-		var h6 = (baseSelector.find("h6:first").exists()||$jq("h6:first"));
-		var p = (baseSelector.find("p:first").exists()||$jq("p:first"));
-		var a = (baseSelector.find("a:first").exists()||$jq("a:first"));
-		var body = $jq("body");
+		var baseSelector = ($("[role=main]:first").exists()||$("#main").exists()||$("#content").exists()||$("body"));
+		var h1 = (baseSelector.find("h1:first").exists()||$("h1:first"));
+		var h2 = (baseSelector.find("h2:first").exists()||$("h2:first"));
+		var h3 = (baseSelector.find("h3:first").exists()||$("h3:first"));
+		var h4 = (baseSelector.find("h4:first").exists()||$("h4:first"));
+		var h5 = (baseSelector.find("h5:first").exists()||$("h5:first"));
+		var h6 = (baseSelector.find("h6:first").exists()||$("h6:first"));
+		var p = (baseSelector.find("p:first").exists()||$("p:first"));
+		var a = (baseSelector.find("a:first").exists()||$("a:first"));
+		var body = $("body");
 		var naMsg = "N/A";
 
 
@@ -85,17 +85,17 @@ function parsePage (page, address){
 		var colorProperties = ['color', 'background-color'];
 
 		//iterate through every element
-		$jq('*').each(function() {
+		$('*').each(function() {
 			var color = null;
 
 			for (var prop in colorProperties) {
 				prop = colorProperties[prop];
 
 				//if we can't find this property or it's null, continue
-				if (!$jq(this).css(prop)) continue; 
+				if (!$(this).css(prop)) continue; 
 
 				//create RGBColor object
-				color = $jq(this).css(prop);
+				color = $(this).css(prop);
 
 				//colours.push(color);
 				if(coloursNumPair[color]){
@@ -106,7 +106,7 @@ function parsePage (page, address){
 				}
 			}
 		});
-		$jq.each(colours, function(i,el){
+		$.each(colours, function(i,el){
 			coloursReturn.push([el,coloursNumPair[el]]);
 		});
 
@@ -158,8 +158,8 @@ function parsePage (page, address){
 			, "p-text-colour" : p.css("color")||naMsg
 			, "a-text-colour" : a.css("color")||naMsg		
 			, "main-background-colour" : baseSelector.css("background-color")||naMsg
-			, "background-img" : $jq("body").css("background-image")||naMsg
-			, "background-colour" : $jq("body").css("background-color")||naMsg
+			, "background-img" : $("body").css("background-image")||naMsg
+			, "background-colour" : $("body").css("background-color")||naMsg
 			, "img-paths" : imgPaths||naMsg
 			
 		};
@@ -182,10 +182,7 @@ if (args.length === 0) {
 	            console.log('FAIL to load the address');
 	            phantom.exit();
 	        } else {
-	        	if(page.injectJs(config.jQueryPath)){
-	        		$jq = window.jQuery;
-    				$jq.noConflict();
-    				
+	        	if(page.injectJs(config.jQueryPath)){    				
 		    		var result = parsePage(page, address)
 		    			,imgPath = config.tempImgPath + utils.makeFilename(address) + '.png';
 

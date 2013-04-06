@@ -1,98 +1,108 @@
 
 /* Module dependencies.*/
 var express = require('express')
-  , http = require('http')
-  , path = require('path')
-  , fs = require('fs')
-  , childProcess = require('child_process')
+	, http = require('http')
+	, path = require('path')
+	, fs = require('fs')
+	, childProcess = require('child_process')
 
 /* Variables / Config */
 var config = {
-   binPath : "vendor/phantomjs/bin/phantomjs"
-  , phantomFilePath : "stylify-crawler.js"
-  , screenshotCacheTime : 60000 * 2 //in ms (1000ms = 1 sec)
+	 binPath : "vendor/phantomjs/bin/phantomjs"
+	, phantomFilePath : "stylify-crawler.js"
+	, screenshotCacheTime : 60000 * 2 //in ms (1000ms = 1 sec)
 };
 
 var app = express();
 
 app.configure(function(){
-  app.set('port', process.env.PORT || 5000);
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'ejs');
-  app.use(express.compress());
-  app.use(express.favicon(path.join(__dirname + '/public/favicon.ico'))); 
-  app.use(express.logger('dev'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));  
+	app.set('port', process.env.PORT || 5000);
+	app.set('views', __dirname + '/views');
+	app.set('view engine', 'ejs');
+	app.use(express.compress());
+	app.use(express.favicon(path.join(__dirname + '/public/favicon.ico'))); 
+	app.use(express.logger('dev'));
+	app.use(express.bodyParser());
+	app.use(express.methodOverride());
+	app.use(app.router);
+	app.use(express.static(path.join(__dirname, 'public')));  
 });
 
 app.configure('development', function(){
-  app.use(express.errorHandler());
+	app.use(express.errorHandler());
 });
 app.use(function(err, req, res, next){
-  console.error(err.stack);
-  res.send(500, '<h1>Something\'s gone wrong!</h1><p>Please try to refresh the page</p>');
+	console.error(err.stack);
+	res.send(500, '<h1>Something\'s gone wrong!</h1><p>Please try to refresh the page</p>');
 });
 
 
 var utils = {
-  isValidURL : function(url){
-    var urlRegEx = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-    if(urlRegEx.test(url)){
-      return true;
-    }else{
-      return false;
-    }
-  },
-  deleteFile : function(filePath){
-    try{
-    fs.unlink(filePath, function(){
-      console.log("file deleted", filePath, arguments);
-    });
-    }catch(e){
-      console.log("file delete error", e);
-    }
-  }
+	isValidURL : function(url){
+		var urlRegEx = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+		if(urlRegEx.test(url)){
+			return true;
+		}else{
+			return false;
+		}
+	},
+	deleteFile : function(filePath){
+		try{
+		fs.unlink(filePath, function(){
+			console.log("file deleted", filePath, arguments);
+		});
+		}catch(e){
+			console.log("ERR:file delete error", e);
+		}
+	}
 }
 
 
 /* Routes */
 app.get('/', function(req, res){
-   res.render('index', { title: 'Stylify Me' });
+	 res.render('index', { title: 'Stylify Me' });
 });
 
 app.get('/about', function(req, res){
-   res.render('about', { title: 'About Stylify Me' });
+	 res.render('about', { title: 'About Stylify Me' });
 });
 
 app.get('/query', function(req, res){
-  var url = req.query["url"];
-  if(url && utils.isValidURL(url)){
-    var childArgs = [config.phantomFilePath, req.query["url"]];
-    var jsonResponse = {};
-    
-    childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
-      try{
-        if(err || stderr){
-          res.json(400, { "error": stderr })
-        } else{
-          jsonResponse = JSON.parse(stdout);
-          res.json(jsonResponse);
-          //delete thumbnail after a bit
-          setTimeout(utils.deleteFile, config.screenshotCacheTime, path.join(__dirname, "public", jsonResponse.thumbPath));
-        }
-      }catch(e){
-        console.log(e);
-      }
-    });
-  }else{
-    res.json(400, { "error": 'Invalid or missing "url" parameter' })
-  }
+	var referer = req.get("Referer")
+		,jsonResponse = {}
+		,url, childArgs;
+	console.log("http://localhost:" + app.get('port'), referer)
+	if(referer.indexOf("http://stylifyme.com") == 0 || referer.indexOf("http://www.stylifyme.com") == 0 || referer.indexOf("http://localhost:" + app.get('port')) == 0){
+		url = req.query["url"];
+		if(url && utils.isValidURL(url)){
+			childArgs = [config.phantomFilePath, req.query["url"]];			
+			
+			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
+				try{
+					if(err || stderr){
+						console.log(stderr);
+						res.jsonp(400, { "error": stderr })
+					} else{
+						jsonResponse = JSON.parse(stdout);
+						res.jsonp(jsonResponse);
+						//delete thumbnail after a bit
+						setTimeout(utils.deleteFile, config.screenshotCacheTime, path.join(__dirname, "public", jsonResponse.thumbPath));
+					}
+				}catch(e){
+					console.log(e);
+				}
+			});
+		}else{
+			res.jsonp(400, { "error": 'Invalid or missing "url" parameter' });
+			console.log("ERR:Invalid or missing url parameter", url);
+		}
+	}else{
+		res.jsonp(400, { "error": 'Invalid referer' });
+		console.log("ERR:Invalid referer:", referer);
+	}
 });
 
 
 http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
+	console.log("Express server listening on port " + app.get('port'));
 });
