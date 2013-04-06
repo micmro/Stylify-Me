@@ -1,2 +1,4 @@
 vendor/
-public/images/thumbs/
+public/images/temp-img
+*.sublime-project
+*.sublime-workspace

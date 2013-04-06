@@ -17,8 +17,6 @@ var app = express();
 
 app.configure(function(){
 	app.set('port', process.env.PORT || 5000);
-	app.set('views', __dirname + '/views');
-	app.set('view engine', 'ejs');
 	app.use(express.compress());
 	app.use(express.favicon(path.join(__dirname + '/public/favicon.ico'))); 
 	app.use(express.logger('dev'));
@@ -28,9 +26,15 @@ app.configure(function(){
 	app.use(express.static(path.join(__dirname, 'public')));  
 });
 
+
 app.configure('development', function(){
-	app.use(express.errorHandler());
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
 });
+
+app.configure('production', function(){
+  app.use(express.errorHandler()); 
+});
+
 app.use(function(err, req, res, next){
 	console.error(err.stack);
 	res.send(500, '<h1>Something\'s gone wrong!</h1><p>Please try to refresh the page</p>');
@@ -60,18 +64,19 @@ var utils = {
 
 /* Routes */
 app.get('/', function(req, res){
-	 res.render('index', { title: 'Stylify Me' });
+	 //res.render('index', { title: 'Stylify Me' });
+	 res.redirect(301, "http://stylifyme.com/");
 });
 
 app.get('/about', function(req, res){
-	 res.render('about', { title: 'About Stylify Me' });
+	 //res.render('about', { title: 'About Stylify Me' });
+	 res.redirect(301, "http://stylifyme.com/about-us.html");
 });
 
 app.get('/query', function(req, res){
 	var referer = req.get("Referer")||"http://stylify.herokuapp.com"
 		,jsonResponse = {}
 		,url, childArgs;
-	console.log("http://localhost:" + app.get('port'), referer)
 	if(referer.indexOf("http://stylifyme.com") == 0 || referer.indexOf("http://www.stylifyme.com") == 0 || referer.indexOf("http://stylify.herokuapp.com") == 0 || referer.indexOf("http://localhost:" + app.get('port')) == 0){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
@@ -102,6 +107,10 @@ app.get('/query', function(req, res){
 	}
 });
 
+//Handle 404
+app.get("/*", function(req, res) {
+    res.redirect(301, "http://stylifyme.com");
+});
 
 http.createServer(app).listen(app.get('port'), function(){
 	console.log("Express server listening on port " + app.get('port'));
