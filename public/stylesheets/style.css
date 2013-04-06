@@ -18,7 +18,7 @@ svg{overflow:hidden}
 * { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
 
 /*base*/
-body{font:13px/1.5 "Helvetica Neue", Arial, "Liberation Sans", FreeSans, sans-serif}
+body, button{font:13px/1.5 "Helvetica Neue", Arial, "Liberation Sans", FreeSans, sans-serif}
 pre,code{font-family:"DejaVu Sans Mono", Menlo, Consolas, monospace}
 hr{border:0 solid #ccc;border-top-width:1px;clear:both;height:0}
 h1{font-size:25px}
@@ -104,6 +104,8 @@ a:hover, a:focus { text-decoration: underline; }
 .action-button {position: absolute; top:18px; padding:6px 10px; background: #000; border:0; color: #fff; font-size: 14px; font-weight: bold; cursor: pointer; -webkit-border-radius: 8px; -moz-border-radius: 8px; border-radius: 8px;}
 .action-button i {float: left; width: 12px; height: 12px; margin:3px 7px 0 0; background: url(../images/down-btn.png) 0 0 no-repeat;}
 .action-button[disabled] {background: #e1e1e1;  cursor: default;}
+.text-button {background: none; border:0; font-weight: bold; font-size: 14px; line-height: 18px; cursor:pointer; padding: 0; text-align: left;}
+.text-button:hover, .text-button:focus {text-decoration: underline;}
 #btn-download { right: 90px;}
 #btn-print { right: 10px;}
 
