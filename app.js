@@ -68,11 +68,11 @@ app.get('/about', function(req, res){
 });
 
 app.get('/query', function(req, res){
-	var referer = req.get("Referer")
+	var referer = req.get("Referer")||"http://stylify.herokuapp.com"
 		,jsonResponse = {}
 		,url, childArgs;
 	console.log("http://localhost:" + app.get('port'), referer)
-	if(referer.indexOf("http://stylifyme.com") == 0 || referer.indexOf("http://www.stylifyme.com") == 0 || referer.indexOf("http://localhost:" + app.get('port')) == 0){
+	if(referer.indexOf("http://stylifyme.com") == 0 || referer.indexOf("http://www.stylifyme.com") == 0 || referer.indexOf("http://stylify.herokuapp.com") == 0 || referer.indexOf("http://localhost:" + app.get('port')) == 0){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
 			childArgs = [config.phantomFilePath, req.query["url"]];			
