@@ -86,10 +86,14 @@ app.get('/query', function(req, res){
 				try{
 					if(err || stderr){
 						console.log(stderr);
-						res.jsonp(400, { "error": stderr });
-					} else if(stdout.indexOf("ERROR:") === 0 || stdout.indexOf("PHANTOM ERROR:") === 0 || stdout.indexOf("CONSOLE:") === 0){
+						res.jsonp(503, { "error": stderr });
+					} else if(stdout.indexOf("ERROR:") === 0 || stdout.indexOf("PHANTOM ERROR:") === 0){
 						console.log(stdout);
-						res.jsonp(400, { "error": stdout });
+						res.jsonp(503, { "error": stdout });
+					} else if (stdout.indexOf("CONSOLE:") === 0) {
+						jsonResponse = JSON.parse(stdout.replace(/(CONSOLE:).*[\n\r]/gi,""));
+						res.jsonp(jsonResponse);
+						setTimeout(utils.deleteFile, config.screenshotCacheTime, path.join(__dirname, "public", jsonResponse.thumbPath));
 					}else{
 						jsonResponse = JSON.parse(stdout);
 						res.jsonp(jsonResponse);
