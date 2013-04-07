@@ -8,15 +8,36 @@ phantom.cookiesEnabled = false;
 /*request and render settings*/
 page.zoomFactor = 1;
 page.viewportSize = { width: 1024, height: 768 };
-page.onConsoleMessage = function (msg) { console.log(msg); };
-
 var config = {
 	tempImgPath : "public/temp-img/",
 	jQueryPath : "lib/jquery.1.8.3.min.js"
 };
 
 
+page.onConsoleMessage = function (msg) { 
+	if (msg.indexOf("Unsafe JavaScript attempt to access frame with URL") > -1){
+		return; 
+	}
+	console.log('CONSOLE: ' + msg);
+};
+page.onAlert = function (msg) {
+	//ignore alerts
+	//console.log('ALERT: ' + msg);
+};
 /*error tracing*/
+page.onError = function(msg, trace) {
+    var msgStack = ['ERROR: ' + msg];
+    if (trace) {
+        msgStack.push('TRACE:');
+        trace.forEach(function(t) {
+            msgStack.push(' -> ' + (t.file||t.sourceURL) + ': ' + t.line + (t.function ? ' (in function ' + t.function + ')' : ''));
+        });
+    }
+    console.error(msgStack.join('\n'));
+	//phantom.exit();
+	return;
+};
+
 phantom.onError = function(msg, trace) {
     var msgStack = ['PHANTOM ERROR: ' + msg];
     if (trace) {
@@ -26,7 +47,7 @@ phantom.onError = function(msg, trace) {
         });
     }
     console.error(msgStack.join('\n'));
-    phantom.exit();
+	phantom.exit();
 };
 
 
@@ -206,6 +227,7 @@ try{
 							//return result and save screen
 							console.log(JSON.stringify(result));						
 							page.render(imgPath);
+				    		//phantom.exit(JSON.stringify(result));
 				    		phantom.exit();
 						}else{
 							console.log("ERROR: COULD NOT LOAD JQUERY");

@@ -87,7 +87,7 @@ app.get('/query', function(req, res){
 					if(err || stderr){
 						console.log(stderr);
 						res.jsonp(400, { "error": stderr });
-					} else if(stdout.indexOf("ERROR:") === 0 || stdout.indexOf("PHANTOM ERROR:") === 0){
+					} else if(stdout.indexOf("ERROR:") === 0 || stdout.indexOf("PHANTOM ERROR:") === 0 || stdout.indexOf("CONSOLE:") === 0){
 						console.log(stdout);
 						res.jsonp(400, { "error": stdout });
 					}else{
