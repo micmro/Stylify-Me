@@ -195,7 +195,7 @@ try{
 		        	window.setTimeout(function () {
 			        	if(page.injectJs(config.jQueryPath)){    				
 				    		var result = parsePage(page, address)
-				    			,imgPath = config.tempImgPath + utils.makeFilename(address) + '.png';
+				    			,imgPath = config.tempImgPath + utils.makeFilename(address) + "_" + new Date().getTime().toString() + '.png';
 				    		if(!result){
 				    			console.log("ERROR: COULD NOT PARSE SITE");
 								phantom.exit();
