@@ -108,9 +108,9 @@ app.get('/query', function(req, res){
 });
 
 //Handle 404
-app.get("/*", function(req, res) {
-    res.redirect(301, "http://stylifyme.com");
-});
+/*app.get("[^/temp-img]", function(req, res) {
+   // res.redirect(301, "http://stylifyme.com");
+});*/
 
 http.createServer(app).listen(app.get('port'), function(){
 	console.log("Express server listening on port " + app.get('port'));
