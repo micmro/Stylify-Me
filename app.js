@@ -4,7 +4,7 @@ var express = require('express')
 	, http = require('http')
 	, path = require('path')
 	, fs = require('fs')
-	, childProcess = require('child_process')
+	, childProcess = require('child_process');
 
 /* Variables / Config */
 var config = {
@@ -52,9 +52,9 @@ var utils = {
 	},
 	deleteFile : function(filePath){
 		try{
-		fs.unlink(filePath, function(){
-			console.log("file deleted", filePath, arguments);
-		});
+			fs.unlink(filePath, function(){
+				console.log("file deleted", filePath, arguments);
+			});
 		}catch(e){
 			console.log("ERR:file delete error", e);
 		}
@@ -86,8 +86,11 @@ app.get('/query', function(req, res){
 				try{
 					if(err || stderr){
 						console.log(stderr);
-						res.jsonp(400, { "error": stderr })
-					} else{
+						res.jsonp(400, { "error": stderr });
+					} else if(stdout.indexOf("ERROR:") === 0 || stdout.indexOf("PHANTOM ERROR:") === 0){
+						console.log(stdout);
+						res.jsonp(400, { "error": stdout });
+					}else{
 						jsonResponse = JSON.parse(stdout);
 						res.jsonp(jsonResponse);
 						//delete thumbnail after a bit

@@ -8,6 +8,7 @@ phantom.cookiesEnabled = false;
 /*request and render settings*/
 page.zoomFactor = 1;
 page.viewportSize = { width: 1024, height: 768 };
+page.onConsoleMessage = function (msg) { console.log(msg); };
 
 var config = {
 	tempImgPath : "public/temp-img/",
@@ -43,9 +44,15 @@ var utils = {
 	}
 };
 
+//alalize the styles
 function parsePage (page, address){
-	var pageAttributes = page.evaluate(function () {
-		var images = $("img");
+	return page.evaluate(function () {
+		var $jq = window.jQuery;
+    	$jq.noConflict();
+
+
+
+		var images = $jq("img");
 		var imgPaths = [];
 		if(images.length >= 3){
 			imgPaths.push(images[parseInt(images.length/2)-1].src);
@@ -57,7 +64,9 @@ function parsePage (page, address){
 			});
 		}
 
-		$.fn.exists = function(){
+
+
+		$jq.fn.exists = function(){
 			if(this.length>0){
 			    return this;
 			}else{
@@ -65,37 +74,40 @@ function parsePage (page, address){
 			}
 		};
 
-		var baseSelector = ($("[role=main]:first").exists()||$("#main").exists()||$("#content").exists()||$("body"));
-		var h1 = (baseSelector.find("h1:first").exists()||$("h1:first"));
-		var h2 = (baseSelector.find("h2:first").exists()||$("h2:first"));
-		var h3 = (baseSelector.find("h3:first").exists()||$("h3:first"));
-		var h4 = (baseSelector.find("h4:first").exists()||$("h4:first"));
-		var h5 = (baseSelector.find("h5:first").exists()||$("h5:first"));
-		var h6 = (baseSelector.find("h6:first").exists()||$("h6:first"));
-		var p = (baseSelector.find("p:first").exists()||$("p:first"));
-		var a = (baseSelector.find("a:first").exists()||$("a:first"));
-		var body = $("body");
+		
+
+		var baseSelector = ($jq("[role=main]").exists()||$jq("#main").exists()||$jq("#content").exists()||$jq(document.body));
+		var h1 = (baseSelector.find("h1:first").exists()||$jq("h1:first"));
+		var h2 = (baseSelector.find("h2:first").exists()||$jq("h2:first"));
+		var h3 = (baseSelector.find("h3:first").exists()||$jq("h3:first"));
+		var h4 = (baseSelector.find("h4:first").exists()||$jq("h4:first"));
+		var h5 = (baseSelector.find("h5:first").exists()||$jq("h5:first"));
+		var h6 = (baseSelector.find("h6:first").exists()||$jq("h6:first"));
+		var p = (baseSelector.find("p:first").exists()||$jq("p:first"));
+		var a = (baseSelector.find("a:first").exists()||$jq("a:first"));
+		var body = $jq(document.body);
 		var naMsg = "N/A";
 
-
+		
 		var colours = [];
 		var coloursNumPair = {};
 		var coloursReturn = [];
 		//color properties to iterate through
-		var colorProperties = ['color', 'background-color'];
+		var colorProperties = ["color", "background-color"];
+		var color;
+		var result = {};
 
 		//iterate through every element
-		$('*').each(function() {
-			var color = null;
-
-			for (var prop in colorProperties) {
-				prop = colorProperties[prop];
-
+		$jq('*').each(function(i,el) {
+			color = null;
+			el = $jq(el);
+			$jq.each(colorProperties, function(j,prop){
 				//if we can't find this property or it's null, continue
-				if (!$(this).css(prop)) continue; 
-
+				if (!el.css(prop)) {
+					return true;
+				}
 				//create RGBColor object
-				color = $(this).css(prop);
+				color = el.css(prop);
 
 				//colours.push(color);
 				if(coloursNumPair[color]){
@@ -104,9 +116,11 @@ function parsePage (page, address){
 					coloursNumPair[color] = 1;
 					colours.push(color);
 				}
-			}
+			});
+			
 		});
-		$.each(colours, function(i,el){
+		
+		$jq.each(colours, function(i,el){
 			coloursReturn.push([el,coloursNumPair[el]]);
 		});
 
@@ -158,47 +172,57 @@ function parsePage (page, address){
 			, "p-text-colour" : p.css("color")||naMsg
 			, "a-text-colour" : a.css("color")||naMsg		
 			, "main-background-colour" : baseSelector.css("background-color")||naMsg
-			, "background-img" : $("body").css("background-image")||naMsg
-			, "background-colour" : $("body").css("background-color")||naMsg
+			, "background-img" : body.css("background-image")||naMsg
+			, "background-colour" : body.css("background-color")||naMsg
 			, "img-paths" : imgPaths||naMsg
 			
 		};
 	});
-
-	return pageAttributes;
 };
 
 
+try{
+	//main
+	if (args.length === 0) {
+	    console.log('Usage: color-crawler.js <some URL>');
+	    phantom.exit();
+	}else{
+		address = args[1];
+		if(utils.isValidURL(address)){	
+			page.open(address, function (status) {	    
+			    if (status == 'success'){
+		        	//delay analizing a bit
+		        	window.setTimeout(function () {
+			        	if(page.injectJs(config.jQueryPath)){    				
+				    		var result = parsePage(page, address)
+				    			,imgPath = config.tempImgPath + utils.makeFilename(address) + '.png';
+				    		if(!result){
+				    			console.log("ERROR: COULD NOT PARSE SITE");
+								phantom.exit();
+				    		} 
 
-//main
-if (args.length === 0) {
-    console.log('Usage: color-crawler.js <some URL>');
-    phantom.exit();
-}else{
-	address = args[1];
-	if(utils.isValidURL(address)){	
-		page.open(address, function (status) {	    
-		    if (status !== 'success') {
-	            console.log('FAIL to load the address');
-	            phantom.exit();
-	        } else {
-	        	if(page.injectJs(config.jQueryPath)){    				
-		    		var result = parsePage(page, address)
-		    			,imgPath = config.tempImgPath + utils.makeFilename(address) + '.png';
+							result.thumbPath =  imgPath.replace("public/", "");
 
-					result.thumbPath =  imgPath.replace("public/", "");
-					console.log(JSON.stringify(result));
-					
-					page.render(imgPath);
-		    		phantom.exit();
+							//return result and save screen
+							console.log(JSON.stringify(result));						
+							page.render(imgPath);
+				    		phantom.exit();
+						}else{
+							console.log("ERROR: COULD NOT LOAD JQUERY");
+							phantom.exit();
+						}
+					}, 200);
 				}else{
-					console.log("ERROR LOADING JQUERY");
-					phantom.exit();
+		            console.log('ERROR:FAIL to load the address');
+		            phantom.exit();
 				}
-			}
-		});	
-	} else {
-		console.error("ERROR: INVALID URL");
-		phantom.exit();
+			});	
+		} else {
+			console.error("ERROR: INVALID URL");
+			phantom.exit();
+		}
 	}
+}catch(e){
+	console.error("ERROR: " + e);
+	phantom.exit();
 }
