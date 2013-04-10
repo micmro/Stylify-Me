@@ -155,6 +155,7 @@ app.get('/getpdf', function(req, res){
 			childArgs = [config.rasterizeFilePath, req.protocol + "://" + req.get('host') + "/renderpdfview?url="+url, filename, "A4"];			
 			
 			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
+				console.log("LOG: CREATED PDF", filename);
 				res.download(filename, "stylify-me_"+utils.makeFilename(url)+".pdf", function(err){
 					utils.deleteFile(filename);
 				});
