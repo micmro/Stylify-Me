@@ -119,11 +119,13 @@ app.get('/about', function(req, res){
 app.get('/renderpdfview', function(req, res){
 	var referer = req.get("Referer")||"http://stylify.herokuapp.com"
 		,jsonResponse = {}
+		,showImage = true
+		,debugMode = false
 		,url, childArgs;
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
-			childArgs = [config.crawlerFilePath, req.query["url"]];			
+			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];			
 			
 			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
 					utils.parsePhantomResponse(err, stdout, stderr,function(jsonResponse){
@@ -171,11 +173,13 @@ app.get('/getpdf', function(req, res){
 app.get('/query', function(req, res){
 	var referer = req.get("Referer")||"http://stylify.herokuapp.com"
 		,jsonResponse = {}
+		,showImage = true
+		,debugMode = false
 		,url, childArgs;
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
-			childArgs = [config.crawlerFilePath, req.query["url"]];			
+			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];			
 			
 			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
 					utils.parsePhantomResponse(err, stdout, stderr,function(jsonResponse){

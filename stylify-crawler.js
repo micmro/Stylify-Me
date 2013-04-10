@@ -1,7 +1,7 @@
 "use strict";
 var	page = require('webpage').create(),
 	args = require('system').args,
-	address, isDebug;
+	address, isDebug, saveImage;
 
 /*phantom settings*/
 phantom.cookiesEnabled = false;
@@ -238,7 +238,8 @@ try{
 	    phantom.exit();
 	}else{
 		address = args[1];
-		isDebug = args[2] === "true";
+		saveImage = args[2] !== "false";
+		isDebug = args[3] === "true";
 		if(utils.isValidURL(address)){	
 			page.open(address, function (status) {	    
 			    if (status == 'success'){
@@ -252,11 +253,13 @@ try{
 								phantom.exit();
 				    		} 
 
-							result.thumbPath =  imgPath.replace("public/", "");
+				    		if(saveImage){
+								result.thumbPath =  imgPath.replace("public/", "");
+								page.render(imgPath);
+							}
 
 							//return result and save screen
-							console.log(JSON.stringify(result));						
-							page.render(imgPath);
+							console.log(JSON.stringify(result));	
 				    		//phantom.exit(JSON.stringify(result));
 				    		phantom.exit();
 						}else{
