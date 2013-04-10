@@ -9,8 +9,9 @@ var express = require('express')
 /* Variables / Config */
 var config = {
 	 binPath : "vendor/phantomjs/bin/phantomjs"
-	, phantomFilePath : "stylify-crawler.js"
-	, screenshotCacheTime : 60000 * 2 //in ms (1000ms = 1 sec)
+	, crawlerFilePath : "stylify-crawler.js"
+	, rasterizeFilePath : "phantom-rasterize.js"
+	, screenshotCacheTime : 60000 * 1 //in ms (1000ms = 1 sec)
 };
 
 var app = express();
@@ -18,6 +19,8 @@ var app = express();
 app.configure(function(){
 	app.set('port', process.env.PORT || 5000);
 	app.use(express.compress());
+	app.set('views', __dirname + '/views');
+	app.set('view engine', 'ejs');
 	app.use(express.favicon(path.join(__dirname + '/public/favicon.ico'))); 
 	app.use(express.logger('dev'));
 	app.use(express.bodyParser());
@@ -58,51 +61,77 @@ var utils = {
 		}catch(e){
 			console.log("ERR:file delete error", e);
 		}
+	},
+	isRefererValid : function(referer){
+		var validRefs = ["http://stylifyme.com", "http://www.stylifyme.com", "http://stylify.herokuapp.com", "http://localhost:9185", "http://localhost:" + app.get('port')]
+			,isvalid = false;
+		for(valRef in validRefs){
+			if(referer.indexOf(validRefs[valRef]) == 0){
+				isvalid = true;
+				return true;
+			}
+		}
+		if(!isvalid){
+			console.log("ERR:Invalid referer:", referer);
+		}
+		return isvalid;
+	},
+	parsePhantomResponse : function(err, stdout, stderr, onsuccess, onerror){
+		var jsonResponse = {};
+		try{
+			if(err || stderr){
+				console.log("ERR:PHANTOM>",stderr);
+				onerror(stdout);
+			} else if(stdout.indexOf("ERROR:") === 0 || stdout.indexOf("PHANTOM ERROR:") === 0){
+				console.log("ERR:PHANTOM>", stdout);
+				onerror(stdout);
+			} else if (stdout.indexOf("CONSOLE:") === 0) {
+				jsonResponse = JSON.parse(stdout.replace(/(CONSOLE:).*[\n\r]/gi,""));
+				onsuccess(jsonResponse);
+				//delete thumbnail after a bit
+				setTimeout(utils.deleteFile, config.screenshotCacheTime, path.join(__dirname, "public", jsonResponse.thumbPath));
+			}else{
+				jsonResponse = JSON.parse(stdout);
+				onsuccess(jsonResponse);
+				//delete thumbnail after a bit
+				setTimeout(utils.deleteFile, config.screenshotCacheTime, path.join(__dirname, "public", jsonResponse.thumbPath));
+			}
+		}catch(e){
+			console.log(e);
+		}
+	},
+	makeFilename : function(url){
+		return  url.replace(/http:\/\//,"").replace(/[\/:/]/g,"_");
 	}
 }
 
 
 /* Routes */
 app.get('/', function(req, res){
-	 //res.render('index', { title: 'Stylify Me' });
 	 res.redirect(301, "http://stylifyme.com/");
 });
 
 app.get('/about', function(req, res){
-	 //res.render('about', { title: 'About Stylify Me' });
 	 res.redirect(301, "http://stylifyme.com/about-us.html");
 });
 
-app.get('/query', function(req, res){
+//renders html for PDF
+app.get('/renderpdfview', function(req, res){
 	var referer = req.get("Referer")||"http://stylify.herokuapp.com"
 		,jsonResponse = {}
 		,url, childArgs;
-	if(referer.indexOf("http://stylifyme.com") == 0 || referer.indexOf("http://www.stylifyme.com") == 0 || referer.indexOf("http://stylify.herokuapp.com") == 0 || referer.indexOf("http://localhost:" + app.get('port')) == 0){
+	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
-			childArgs = [config.phantomFilePath, req.query["url"]];			
+			childArgs = [config.crawlerFilePath, req.query["url"]];			
 			
 			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
-				try{
-					if(err || stderr){
-						console.log(stderr);
-						res.jsonp(503, { "error": stderr });
-					} else if(stdout.indexOf("ERROR:") === 0 || stdout.indexOf("PHANTOM ERROR:") === 0){
-						console.log(stdout);
-						res.jsonp(503, { "error": stdout });
-					} else if (stdout.indexOf("CONSOLE:") === 0) {
-						jsonResponse = JSON.parse(stdout.replace(/(CONSOLE:).*[\n\r]/gi,""));
-						res.jsonp(jsonResponse);
-						setTimeout(utils.deleteFile, config.screenshotCacheTime, path.join(__dirname, "public", jsonResponse.thumbPath));
-					}else{
-						jsonResponse = JSON.parse(stdout);
-						res.jsonp(jsonResponse);
-						//delete thumbnail after a bit
-						setTimeout(utils.deleteFile, config.screenshotCacheTime, path.join(__dirname, "public", jsonResponse.thumbPath));
+					utils.parsePhantomResponse(err, stdout, stderr,function(jsonResponse){
+						res.render('pdfbase', { title: 'Stylify Me - Extract', pageUrl: url, data : jsonResponse });
 					}
-				}catch(e){
-					console.log(e);
-				}
+					,function(stdout){
+						res.jsonp(503, { "error": stdout });
+					});
 			});
 		}else{
 			res.jsonp(400, { "error": 'Invalid or missing "url" parameter' });
@@ -110,7 +139,58 @@ app.get('/query', function(req, res){
 		}
 	}else{
 		res.jsonp(400, { "error": 'Invalid referer' });
-		console.log("ERR:Invalid referer:", referer);
+	}
+});
+
+//returns PDF file
+app.get('/getpdf', function(req, res){
+	var referer = req.get("Referer")||"http://stylify.herokuapp.com"
+		,url, childArgs, filename;
+	if(utils.isRefererValid(referer)){
+		url = req.query["url"];
+		if(url && utils.isValidURL(url)){
+			filename = "/public/pdf/test.pdf";
+			childArgs = [config.rasterizeFilePath, req.protocol + "://" + req.get('host') + "/renderpdfview?url="+url, filename, "A4"];			
+			
+			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
+				res.download(filename, "stylify-me_"+utils.makeFilename(url)+".pdf", function(err){
+					utils.deleteFile(filename);
+				});
+			});
+		}else{
+			res.jsonp(400, { "error": 'Invalid or missing "url" parameter' });
+			console.log("ERR:Invalid or missing url parameter", url);
+		}
+	}else{
+		res.jsonp(400, { "error": 'Invalid referer' });
+	}
+});
+
+
+//returns stylify json
+app.get('/query', function(req, res){
+	var referer = req.get("Referer")||"http://stylify.herokuapp.com"
+		,jsonResponse = {}
+		,url, childArgs;
+	if(utils.isRefererValid(referer)){
+		url = req.query["url"];
+		if(url && utils.isValidURL(url)){
+			childArgs = [config.crawlerFilePath, req.query["url"]];			
+			
+			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
+					utils.parsePhantomResponse(err, stdout, stderr,function(jsonResponse){
+						res.jsonp(jsonResponse);
+					}
+					,function(stdout){
+						res.jsonp(503, { "error": stdout });
+					});
+			});
+		}else{
+			res.jsonp(400, { "error": 'Invalid or missing "url" parameter' });
+			console.log("ERR:Invalid or missing url parameter", url);
+		}
+	}else{
+		res.jsonp(400, { "error": 'Invalid referer' });
 	}
 });
 
