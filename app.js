@@ -151,8 +151,32 @@ app.get('/getpdf', function(req, res){
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
-			filename = "/public/pdf/test.pdf";
+			filename = "/public/pdf/temp" + utils.makeFilename(url) + "_" + new Date().getTime().toString() + ".pdf";
 			childArgs = [config.rasterizeFilePath, req.protocol + "://" + req.get('host') + "/renderpdfview?url="+url, filename, "A4"];			
+			
+			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
+				console.log("LOG: CREATED PDF", filename);
+				res.download(filename, "stylify-me_"+utils.makeFilename(url)+".pdf", function(err){
+					utils.deleteFile(filename);
+				});
+			});
+		}else{
+			res.jsonp(400, { "error": 'Invalid or missing "url" parameter' });
+			console.log("ERR:Invalid or missing url parameter", url);
+		}
+	}else{
+		res.jsonp(400, { "error": 'Invalid referer' });
+	}
+});
+
+app.get('/getpdfTest', function(req, res){
+	var referer = req.get("Referer")||"http://stylify.herokuapp.com"
+		,url, childArgs, filename;
+	if(utils.isRefererValid(referer)){
+		url = req.query["url"];
+		if(url && utils.isValidURL(url)){
+			filename = "/public/pdf/temp" + utils.makeFilename(url) + "_" + new Date().getTime().toString() + ".pdf";
+			childArgs = [config.rasterizeFilePath, url, filename, "A4"];
 			
 			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
 				console.log("LOG: CREATED PDF", filename);
