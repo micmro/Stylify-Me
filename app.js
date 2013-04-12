@@ -175,12 +175,12 @@ app.get('/getpdfTest', function(req, res){
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
-			filename = "/public/pdf/temp" + utils.makeFilename(url) + "_" + new Date().getTime().toString() + ".pdf";
+			filename = "/public/pdf/temp" + utils.makeFilename(url) + "_" + new Date().getTime().toString() + ".jpg";
 			childArgs = [config.rasterizeFilePath, url, filename, "A4"];
 			
 			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
 				console.log("LOG: CREATED PDF", filename);
-				res.download(filename, "stylify-me_"+utils.makeFilename(url)+".pdf", function(err){
+				res.download(filename, "stylify-me_"+utils.makeFilename(url)+".jpg", function(err){
 					utils.deleteFile(filename);
 				});
 			});
