@@ -23,10 +23,11 @@ if (system.args.length < 3 || system.args.length > 5) {
             console.log('Unable to load the address!');
             phantom.exit();
         } else {
-            window.setTimeout(function () {
+         //   window.setTimeout(function () {
                 page.render(output);
+                console.log("done");
                 phantom.exit();
-            }, 200);
+          //  }, 200);
         }
     });
 }
