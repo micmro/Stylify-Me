@@ -1,5 +1,3 @@
 vendor/
-public/images/temp-img/
-public/temp-img/
 *.sublime-project
 *.sublime-workspace

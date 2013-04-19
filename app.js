@@ -151,8 +151,8 @@ app.get('/getpdf', function(req, res){
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
-			filename = "/public/pdf/temp" + utils.makeFilename(url) + "_" + new Date().getTime().toString() + ".pdf";
-			childArgs = [config.rasterizeFilePath, req.protocol + "://" + req.get('host') + "/renderpdfview?url="+url, filename, "A4"];			
+			filename = "public/pdf/temp" + utils.makeFilename(url) + "_" + new Date().getTime().toString() + ".pdf";
+			childArgs = [config.rasterizeFilePath, req.protocol + "://" + req.get('host') + "/renderpdfview?url="+encodeURIComponent(url), filename, "A4"];			
 			
 			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
 				console.log("LOG: CREATED PDF", filename);
@@ -175,7 +175,7 @@ app.get('/getpdfTest', function(req, res){
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
-			filename = "/public/temp.jpg";
+			filename = "public/temp.jpg";
 			childArgs = ["phantom-rasterize.js", url, filename, "A4"];
 			
 			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
