@@ -1,8 +1,10 @@
-Stylify
-=======
+Stylify Me
+==========
 
-A website style analyzer based off PhantomJS (http://phantomjs.org) and NodeJS (http://nodejs.org/).
+A Style Guide Generator - using NodeJS (http://nodejs.org/) and PhantomJS (http://phantomjs.org) a command line webkit browser.
 
-We host our app on Heroku (http://heroku.com) using this buildfile https://github.com/micmro/heroku-buildpack-phantomjs
+We host our app on Heroku (http://heroku.com) using the multi buildpack (https://github.com/ddollar/heroku-buildpack-multi).
 
 See it live at http://stylifyme.com
+
+This repo only contains the web service.
