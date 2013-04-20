@@ -67,12 +67,8 @@
 		<% } %>
 
 		<% var bodyTypo = data.typography["body"]; %>
-		<dt id="result-header-body-dt" class="<%= bodyTypo['font']=='N/A' ? 'not-set':'' %>"><strong>Body:</strong> <span><%= bodyTypo["font"] + ", " + bodyTypo["font-style"] + ", " + bodyTypo["font-size"] + ", " + bodyTypo["leading"] + ", " + bodyTypo["text-colour"]%></span></dt>
-		<dd id="result-header-body-dd" class="<%= bodyTypo['font']=='N/A' ? 'not-set':'' %>" style="font-family:<%=bodyTypo["font"]%>; font-style:<%=bodyTypo["font-style"]%>; font-size:<%=bodyTypo["font-size"]%>; line-height:<%=bodyTypo["line-height"]%>; color:<%=bodyTypo["color"]%>; background-color:<%=bodyTypo["background-color"] == '#ffffff' ? '#959595' : 'transparent'%>;"><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce id tempus tellus. Ut consectetur congue turpis, nec vestibulum nulla ullamcorper a. Cras congue tellus et diam blandit porttitor. Aliquam elit orci, interdum vitae hendrerit id, semper non nisl. Quisque faucibus iaculis mauris, id lobortis lacus consequat sit amet. Phasellus arcu nunc, iaculis mollis sodales ut, blandit eget mauris. Nulla adipiscing feugiat sagittis. Mauris vel semper est.</span></dd>
-
-		<dt id="result-links-dt" class="last"><strong>Links (Header #)</strong></dt>
-		<dd id="result-links-dd" class="last"><span style="color:<%=data["a-text-colour"]%>">Example Link</span></dd>
-
+		<dt id="result-header-body-dt" class="last <%= bodyTypo['font']=='N/A' ? 'not-set':'' %>"><strong>Body:</strong> <span><%= bodyTypo["font"] + ", " + bodyTypo["font-style"] + ", " + bodyTypo["font-size"] + ", " + bodyTypo["leading"] + ", " + bodyTypo["text-colour"]%></span></dt>
+		<dd id="result-header-body-dd" class="last <%= bodyTypo['font']=='N/A' ? 'not-set':'' %>" style="font-family:<%=bodyTypo["font"]%>; font-style:<%=bodyTypo["font-style"]%>; font-size:<%=bodyTypo["font-size"]%>; line-height:<%=bodyTypo["line-height"]%>; color:<%=bodyTypo["color"]%>; background-color:<%=bodyTypo["background-color"] == '#ffffff' ? '#959595' : 'transparent'%>;"><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce id tempus tellus. Ut consectetur congue turpis, nec vestibulum nulla ullamcorper a. Cras congue tellus et diam blandit porttitor. Aliquam elit orci, interdum vitae hendrerit id, semper non nisl. Quisque faucibus iaculis mauris, id lobortis lacus consequat sit amet. Phasellus arcu nunc, iaculis mollis sodales ut, blandit eget mauris. Nulla adipiscing feugiat sagittis. Mauris vel semper est.</span></dd>
 	</dl>
 
 
