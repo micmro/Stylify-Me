@@ -87,10 +87,12 @@
 
 		h1 { font-weight: normal; padding-top: 18px; }
 		h2 {padding-top: 18px; font-weight: bold; font-size: 14px; line-height: 36px; color:#959595; border-bottom:solid 1px #959595; }
+		.logo {padding-top: 18px; text-align: right; font-size: 18px;}
 
 		.swatch-wrap {border:solid 1px #ccc; padding: 5px;}
 		.swatch-holder {width:88px; height: 88px; background: #e1e1e1;}
-		.swatch-wrap figcaption span {display: block; text-transform: uppercase;}
+		.swatch-wrap figcaption {color: #363636; font-size: 12px; font-weight: bold; line-height: 1.5em; padding: 5px 0 0; }
+		.swatch-wrap figcaption span {text-transform: lowercase;}
 
 		.grid-dl {margin-top: -19px; display: table-row;}
 		.grid-dl dt{float: left; clear: both; padding: 18px 0; width: 34%; border:solid 1px #ebebeb; border-left:0; border-bottom:0; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; box-sizing:border-box; }
@@ -121,6 +123,11 @@
 		.right {float:right;}
 		.left {float:left;}
 		.hide {display:none;}
+
+
+		@media print {
+			.page-break	{ display: block; page-break-before: always; }
+		}
 	</style>
 </head>
 <body>

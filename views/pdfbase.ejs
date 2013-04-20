@@ -1,28 +1,46 @@
 <% include header.ejs %>
 
 <div id="main-holder" class="container_16">
-	<div class="grid_16">
-		<h1>Stylify Me</h1>    
+	<div class="grid_13">
+		<h1><%= pageUrl.replace("http://","") %></h1>    
 	</div>
-	<div class="grid_16">
-		Result for: <%= pageUrl %>
-	</div>
-
-
-
-
-	<div class="grid_16">
-		<h2>Colours and patterns</h2>    
+	<div class="grid_3 logo">
+		Stylify Me
 	</div>
 
-	<% for(var i=0; i<data["colours"].length; i++) {%>
+
+
+
+	<div class="grid_16">
+		<h2>Background Colours</h2>    
+	</div>
+
+	<% for(var i=0; i<data["coloursBg"].length; i++) {%>
 		<% if(i<8){ %>
 	   <div class="grid_2">    
 			<figure id="color-<%= i+1%>" class="swatch-wrap">
-				<div class="swatch-holder" style="background-color:<%= data["colours"][i] %>"></div>
+				<div class="swatch-holder" style="background-color:<%= data["coloursBg"][i][0] %>"></div>
 				<figcaption>
 					HEX
-					<span class="colour-hex"><%= data["colours"][i] %></span>
+					<span class="colour-hex"><%= data["coloursBg"][i][0] %></span>
+				</figcaption>
+			</figure>
+		</div>
+		<% } %>
+	<% } %>
+
+	<div class="grid_16">
+		<h2>Text Colours</h2>    
+	</div>
+
+	<% for(var i=0; i<data["coloursText"].length; i++) {%>
+		<% if(i<8){ %>
+	   <div class="grid_2">    
+			<figure id="color-<%= i+1%>" class="swatch-wrap">
+				<div class="swatch-holder" style="background-color:<%= data["coloursText"][i][0] %>"></div>
+				<figcaption>
+					HEX
+					<span class="colour-hex"><%= data["coloursText"][i][0] %></span>
 				</figcaption>
 			</figure>
 		</div>
@@ -71,7 +89,7 @@
 	<% } %>
 
 
-	<div id="homepage-img-section">
+	<div id="homepage-img-section" class="page-break">
 	<h2 class="grid_16">Homepage</h2>
 	
 	<div id="homepage-img-holder" class="grid_16">

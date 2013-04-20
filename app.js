@@ -156,31 +156,7 @@ app.get('/getpdf', function(req, res){
 			
 			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
 				console.log("LOG: CREATED PDF", filename);
-				res.download(filename, "stylify-me_"+utils.makeFilename(url)+".pdf", function(err){
-					utils.deleteFile(filename);
-				});
-			});
-		}else{
-			res.jsonp(400, { "error": 'Invalid or missing "url" parameter' });
-			console.log("ERR:Invalid or missing url parameter", url);
-		}
-	}else{
-		res.jsonp(400, { "error": 'Invalid referer' });
-	}
-});
-
-app.get('/getpdfTest', function(req, res){
-	var referer = req.get("Referer")||"http://stylify.herokuapp.com"
-		,url, childArgs, filename;
-	if(utils.isRefererValid(referer)){
-		url = req.query["url"];
-		if(url && utils.isValidURL(url)){
-			filename = "public/temp.jpg";
-			childArgs = ["phantom-rasterize.js", url, filename, "A4"];
-			
-			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
-				console.log("LOG: CREATED PDF", filename);
-				res.download(filename, "stylify-me.jpg", function(err){
+				res.download(filename, "stylify-me "+utils.makeFilename(url)+".pdf", function(err){
 					utils.deleteFile(filename);
 				});
 			});
@@ -211,7 +187,7 @@ app.get('/query', function(req, res){
 						res.jsonp(jsonResponse);
 					}
 					,function(stdout){
-						res.jsonp(503, { "error": stdout });
+						res.jsonp(503, { "error": stdout.replace(/\r\n/, " ") });
 					});
 			});
 		}else{
