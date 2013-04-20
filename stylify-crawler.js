@@ -119,6 +119,19 @@ function parsePage (page, address){
 				,"font-style" : el.css("font-style")||naMsg
 			};
 		};
+		var orderColourResponse = function(colourArr, prependValueArr){
+			colourArr = (colourArr||[]).sort(function(a, b){
+			  return ((b[1] < a[1]) ? -1 : ((b[1] > a[1]) ? 1 : 0));
+			});
+
+			$jq.each(prependValueArr, function(i,el){
+				var from =$jq.map(colourArr, function(n, j){
+					return (n[0] == el ? j : null);
+				})[0]||0;
+				colourArr.splice(i, 0, colourArr.splice(from, 1)[0]);
+			});
+			return colourArr;
+		};
 
 		//define vars needed for parsing
 		var images = $jq(document.images);
@@ -139,15 +152,10 @@ function parsePage (page, address){
 		var naMsg = "N/A";
 
 		
-		var colours = [];		
-		var coloursPreReturn = [];
-		var coloursReturn = [];		
-		var colourAttributes = {};
-
-		//color properties to iterate through
-		var colorProperties = ["color", "background-color"];
-		var color;
-		var result = {};
+		var coloursBgReturn = [], coloursTextReturn = [];
+		var colourAttributes = {}, result = {};
+		var colour;
+		var colourOccurences = {};
     	
 		//select images to return
 		if(images.length >= 3){
@@ -166,49 +174,49 @@ function parsePage (page, address){
 
 		//iterate through every element
 		$jq('*').each(function(i,el) {
-			color = null;
+			colour = null;
 			el = $jq(el);
-			$jq.each(colorProperties, function(j,prop){
+			$jq.each(["color", "background-color"], function(j,prop){
 				//if we can't find this property or it's null, continue
 				if (!el.css(prop)) {
 					return true;
 				}
 				//create RGBColor object
-				color = rgb2hex(el.css(prop));
+				colour = rgb2hex(el.css(prop));
 
-				//colours.push(color);
-				if(colourAttributes[color]){
-					colourAttributes[color].count = colourAttributes[color].count+1;
-
-				}else if(hexRegEx.test(color)){
-					colourAttributes[color] = {count: 1};
-					colours.push(color);
+				if(colourAttributes[colour]){
+					colourAttributes[colour][prop] = (colourAttributes[colour][prop]||0) + 1;
+					colourAttributes[colour].count = colourAttributes[colour].count+1;
+					colourOccurences[prop] = (colourOccurences[prop]||0) + 1;
+				}else if(hexRegEx.test(colour)){
+					colourAttributes[colour] = {count: 1};
+					colourAttributes[colour][prop] = 1;
+					colourOccurences[prop] = (colourOccurences[prop]||0) + 1;
 				}
 			});
-			
-		});
-		
-		$jq.each(colours, function(i,el){
-			coloursPreReturn.push([el,colourAttributes[el]]);
-		});
-		coloursPreReturn = (coloursPreReturn||[]).sort(function(a, b){
-		  return ((b[1] < a[1]) ? -1 : ((b[1] > a[1]) ? 1 : 0));
 		});
 
-		//add higher priority colours
-		coloursPreReturn = $jq.merge([[rgb2hex(body.css("background-color"))], [rgb2hex(baseSelector.css("background-color"))], [rgb2hex(baseSelector.css("color"))]], coloursPreReturn);
-
-		$jq.each(coloursPreReturn, function(i, el){
-		    if($jq.inArray(el[0], coloursReturn) === -1 && hexRegEx.test(el[0])){
-		    	coloursReturn.push(el[0]);
-		    }
+		var trace = [];
+		$jq.each(colourAttributes, function(hex,attr){
+			if(attr["color"]||0 > 0){
+				coloursTextReturn.push([hex,attr["color"]]);
+			}
+			if(attr["background-color"]||0 > 0){
+				coloursBgReturn.push([hex,attr["background-color"]]);
+			}
 		});
+
+		coloursTextReturn = orderColourResponse(coloursTextReturn, [rgb2hex(baseSelector.css("color"))]);
+		coloursBgReturn = orderColourResponse(coloursBgReturn, [rgb2hex(body.css("background-color")), rgb2hex(baseSelector.css("background-color"))]);
+
 
 
 		//return result object
 		return {
 			"title" : document.title
-			, "colours" : coloursReturn
+			//, "colourOccurences" : colourOccurences
+			, "coloursText" : coloursTextReturn
+			, "coloursBg" : coloursBgReturn			
 			, "typography" : {
 				"h1" : getTypeSet(h1, "Header 1")
 				,"h2" : getTypeSet(h2, "Header 2")
@@ -259,8 +267,7 @@ try{
 							}
 
 							//return result and save screen
-							console.log(JSON.stringify(result));	
-				    		//phantom.exit(JSON.stringify(result));
+							console.log(JSON.stringify(result));
 				    		phantom.exit();
 						}else{
 							console.log("ERROR: COULD NOT LOAD JQUERY");
