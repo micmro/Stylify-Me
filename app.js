@@ -62,6 +62,7 @@ var utils = {
 			console.log("ERR:file delete error", e);
 		}
 	},
+	
 	isRefererValid : function(referer){
 		var validRefs = ["http://stylifyme.com", "http://www.stylifyme.com", "http://stylify.herokuapp.com", "http://localhost:9185", "http://localhost:" + app.get('port')]
 			,isvalid = false;
