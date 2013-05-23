@@ -182,7 +182,7 @@ app.get('/query', function(req, res){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
 			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];			
-			
+			try{
 			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
 					utils.parsePhantomResponse(err, stdout, stderr,function(jsonResponse){
 						res.jsonp(jsonResponse);
@@ -191,6 +191,10 @@ app.get('/query', function(req, res){
 						res.jsonp(503, { "error": stdout.replace(/\r\n/, " ") });
 					});
 			});
+			}catch(err){
+				res.jsonp(400, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable' });
+				console.log("ERR:Could not create child process", url);
+			}
 		}else{
 			res.jsonp(400, { "error": 'Invalid or missing "url" parameter' });
 			console.log("ERR:Invalid or missing url parameter", url);
