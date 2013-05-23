@@ -11,7 +11,7 @@ var config = {
 	 binPath : "vendor/phantomjs/bin/phantomjs"
 	, crawlerFilePath : "stylify-crawler.js"
 	, rasterizeFilePath : "phantom-rasterize.js"
-	, screenshotCacheTime : 60000 * 1 //in ms (1000ms = 1 sec)
+	, screenshotCacheTime : 5000 * 1 //in ms (1000ms = 1 sec)
 };
 
 var app = express();
@@ -122,20 +122,25 @@ app.get('/renderpdfview', function(req, res){
 		,jsonResponse = {}
 		,showImage = true
 		,debugMode = false
-		,url, childArgs;
+		,url, childArgs, phantomProcess;
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
 			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];			
-			
-			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
-					utils.parsePhantomResponse(err, stdout, stderr,function(jsonResponse){
-						res.render('pdfbase', { title: 'Stylify Me - Extract', pageUrl: url, data : jsonResponse });
-					}
-					,function(stdout){
-						res.jsonp(503, { "error": stdout });
-					});
-			});
+			try{
+				phantomProcess = childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
+						utils.parsePhantomResponse(err, stdout, stderr,function(jsonResponse){
+							res.render('pdfbase', { title: 'Stylify Me - Extract', pageUrl: url, data : jsonResponse });
+						}
+						,function(stdout){
+							res.jsonp(503, { "error": stdout });
+						});
+				});
+			}catch(err){
+				phantomProcess.kill();
+				res.jsonp(400, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable' });
+				console.log("ERR:Could not create render pdf child process", url);
+			}
 		}else{
 			res.jsonp(400, { "error": 'Invalid or missing "url" parameter' });
 			console.log("ERR:Invalid or missing url parameter", url);
@@ -148,19 +153,25 @@ app.get('/renderpdfview', function(req, res){
 //returns PDF file
 app.get('/getpdf', function(req, res){
 	var referer = req.get("Referer")||"http://stylify.herokuapp.com"
-		,url, childArgs, filename;
+		,url, childArgs, filename, phantomProcess;
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
 			filename = "public/pdf/temp" + utils.makeFilename(url) + "_" + new Date().getTime().toString() + ".pdf";
 			childArgs = [config.rasterizeFilePath, req.protocol + "://" + req.get('host') + "/renderpdfview?url="+encodeURIComponent(url), filename, "A4"];			
-			
-			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
-				console.log("LOG: CREATED PDF", filename);
-				res.download(filename, "stylify-me "+utils.makeFilename(url)+".pdf", function(err){
-					utils.deleteFile(filename);
+			try{
+				phantomProcess = childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
+					console.log("LOG: CREATED PDF", filename);
+					res.download(filename, "stylify-me "+utils.makeFilename(url)+".pdf", function(err){
+						utils.deleteFile(filename);
+						phantomProcess.kill();
+					});
 				});
-			});
+			}catch(err){
+				phantomProcess.kill();
+				res.jsonp(400, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable' });
+				console.log("ERR:Could not create get pdf child process", url);
+			}
 		}else{
 			res.jsonp(400, { "error": 'Invalid or missing "url" parameter' });
 			console.log("ERR:Invalid or missing url parameter", url);
@@ -177,14 +188,13 @@ app.get('/query', function(req, res){
 		,jsonResponse = {}
 		,showImage = true
 		,debugMode = false
-		,url, childArgs,
-		phantomProcess;
+		,url, childArgs, phantomProcess;
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
 			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];			
 			try{
-			phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:10000}, function(err, stdout, stderr) {
+				phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:10000}, function(err, stdout, stderr) {
 					utils.parsePhantomResponse(err, stdout, stderr,function(jsonResponse){
 						res.jsonp(jsonResponse);
 					}
@@ -192,7 +202,7 @@ app.get('/query', function(req, res){
 						res.jsonp(503, { "error": stdout.replace(/\r\n/, " ") });
 						phantomProcess.kill();
 					});
-			});
+				});
 			}catch(err){
 				phantomProcess.kill();
 				res.jsonp(400, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable' });
