@@ -177,21 +177,24 @@ app.get('/query', function(req, res){
 		,jsonResponse = {}
 		,showImage = true
 		,debugMode = false
-		,url, childArgs;
+		,url, childArgs,
+		phantomProcess;
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
 			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];			
 			try{
-			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
+			phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:10000}, function(err, stdout, stderr) {
 					utils.parsePhantomResponse(err, stdout, stderr,function(jsonResponse){
 						res.jsonp(jsonResponse);
 					}
 					,function(stdout){
 						res.jsonp(503, { "error": stdout.replace(/\r\n/, " ") });
+						phantomProcess.kill();
 					});
 			});
 			}catch(err){
+				phantomProcess.kill();
 				res.jsonp(400, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable' });
 				console.log("ERR:Could not create child process", url);
 			}
