@@ -16,7 +16,7 @@ var config = {
 	....
 };
 ```
-3. Update the refere check in "isRefererValid" in "app.js":
+3. Update the referer url check in  "app.js" with the url of your frontends url (local and production):
 
 ```javaScript
 isRefererValid : function(referer){
@@ -25,8 +25,8 @@ isRefererValid : function(referer){
 		.....
 	}
 ```
-4. start the nodeJs app with *node app.js*
-5. query *http://localhost:5000/query?url=http%3A%2F%2Fgoogle.com* (assuming you run your app on port 5000) and you should be able to see a JSON response
+4. Start the nodeJs app with *node app.js*
+5. Query *http://localhost:5000/query?url=http%3A%2F%2Fgoogle.com* (assuming you run your app on port 5000) and you should be able to see a JSON response
 
 
 ### Frontend
