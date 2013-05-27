@@ -27,3 +27,13 @@ $.ajax({
 	alert("Could not query site, the service might be down, please try again later.");
 });
 ```
+
+Also remember to update the refere check in "isRefererValid" in "app.js":
+
+```javaScript
+isRefererValid : function(referer){
+		var validRefs = ["http://stylifyme.com", "http://www.stylifyme.com", "http://stylify.herokuapp.com", "http://localhost:9185", "http://localhost:" + app.get('port')]
+			,isvalid = false;
+		.....
+	}
+```
