@@ -255,17 +255,15 @@ try{
 		        	window.setTimeout(function () {
 			        	if(page.injectJs(config.jQueryPath)){    				
 				    		var result = parsePage(page, address)
-				    			,imgPath = config.tempImgPath + utils.makeFilename(address) + "_" + new Date().getTime().toString() + '.png';
+				    			,imgPath = config.tempImgPath + utils.makeFilename(address) + "_" + new Date().getTime().toString() + Math.floor(Math.random()*10000) + '.png';
 				    		if(!result){
-				    			console.log("ERROR: COULD NOT PARSE SITE");
+				    			console.log("ERROR(502)"); //could not parse site
 								phantom.exit();
-				    		} 
-
+				    		}
 				    		if(saveImage){
 								result.thumbPath =  imgPath.replace("public/", "");
 								page.render(imgPath);
 							}
-
 							//return result and save screen
 							console.log(JSON.stringify(result));
 				    		phantom.exit();
@@ -275,12 +273,12 @@ try{
 						}
 					}, 200);
 				}else{
-		            console.log('ERROR:FAIL to load the address');
+		            console.log('ERROR(404)'); //Fail to load the current url
 		            phantom.exit();
 				}
 			});	
 		} else {
-			console.error("ERROR: INVALID URL");
+			console.error("ERROR(400)"); //invalid url
 			phantom.exit();
 		}
 	}
