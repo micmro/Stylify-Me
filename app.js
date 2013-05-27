@@ -77,7 +77,7 @@ var utils = {
 		try{
 			if(err || stderr){
 				console.log("ERR:PHANTOM>",stderr||err);
-				onerror(stdout);
+				onerror(stdout,"111");
 			} else if(stdout.indexOf("ERROR") === 0 || stdout.indexOf("PHANTOM ERROR:") === 0){
 
 				console.log("ERR:PHANTOM>", stdout);
@@ -85,13 +85,13 @@ var utils = {
 
 				var errorCode = stdout.match(/ERROR\((\d+)\)/)[1];
 				switch(errorCode){
-					case "404" : 	onerror("Fail to load the current url");
+					case "404" : 	onerror("Fail to load the current url", errorCode);
 									break;
-					case "502" : 	onerror("Fail to parse site");
+					case "502" : 	onerror("Fail to parse site", errorCode);
 									break;
-					case "400" : 	onerror("Invalid url - we do not suport redirects");
+					case "400" : 	onerror("Invalid url - we do not suport redirects", errorCode);
 									break;
-					default :  onerror(stdout.replace("ERROR:","").replace(/\r\n/, " ")||"error");
+					default :  onerror(stdout.replace("ERROR:","").replace(/\r\n/, " ")||"error", errorCode||"000");
 				}
 			} else if (stdout.indexOf("CONSOLE:") === 0) {
 				jsonResponse = JSON.parse(stdout.replace(/(CONSOLE:).*[\n\r]/gi,""));
@@ -106,7 +106,7 @@ var utils = {
 			}
 		}catch(e){
 			console.log(e);
-			onerror("Fail to parse response");
+			onerror("Fail to parse response","999");
 		}
 	},
 	makeFilename : function(url){
@@ -136,12 +136,12 @@ app.get('/renderpdfview', function(req, res){
 		if(url && utils.isValidURL(url)){
 			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];			
 			try{
-				phantomProcess = childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
+				phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:25000}, function(err, stdout, stderr) {
 						utils.parsePhantomResponse(err, stdout, stderr, function(jsonResponse){
 							res.render('pdfbase', { title: 'Stylify Me - Extract', pageUrl: url, data : jsonResponse });
 						}
-						,function(errorMsg){
-							res.jsonp(503, { "error": errorMsg });
+						,function(errorMsg, errorCode){
+							res.jsonp(503, { "error": errorMsg, "errorCode" : errorCode||"000" });
 							phantomProcess.kill();
 						});
 				});
@@ -169,7 +169,7 @@ app.get('/getpdf', function(req, res){
 			filename = "public/pdf/temp" + utils.makeFilename(url) + "_" + new Date().getTime().toString() + ".pdf";
 			childArgs = [config.rasterizeFilePath, req.protocol + "://" + req.get('host') + "/renderpdfview?url="+encodeURIComponent(url), filename, "A4"];			
 			try{
-				phantomProcess = childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
+				phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:50000}, function(err, stdout, stderr) {
 					console.log("LOG: CREATED PDF", filename);
 					res.download(filename, "stylify-me "+utils.makeFilename(url)+".pdf", function(err){
 						utils.deleteFile(filename);
@@ -178,7 +178,7 @@ app.get('/getpdf', function(req, res){
 				});
 			}catch(err){
 				phantomProcess.kill();
-				res.jsonp(200, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable' });
+				res.jsonp(200, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable', "errorCode" : "503"});
 				console.log("ERR:Could not create get pdf child process", url);
 			}
 		}else{
@@ -206,18 +206,18 @@ app.get('/query', function(req, res){
 				phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:25000}, function(err, stdout, stderr) {
 					utils.parsePhantomResponse(err, stdout, stderr, function(jsonResponse){
 							res.jsonp(200, jsonResponse);
-						}, function(errorMsg){
-							res.jsonp(200,{"error": errorMsg});
+						}, function(errorMsg, errorCode){
+							res.jsonp(200,{"error": errorMsg, "errorCode" : errorCode||"000"});
 							phantomProcess.kill();
 					});
 				});
 			}catch(err){
 				phantomProcess.kill();
-				res.jsonp(200, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable' });
+				res.jsonp(200, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable', "errorCode" : "503"});
 				console.log("ERR:Could not create child process", url);
 			}
 		}else{
-			res.jsonp(200, { "error": 'Invalid or missing "url" parameter' });
+			res.jsonp(200, { "error": 'Invalid or missing "url" parameter', "errorCode" : "500"});
 			console.log("ERR:Invalid or missing url parameter", url);
 		}
 	}else{
