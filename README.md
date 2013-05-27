@@ -16,7 +16,7 @@ var config = {
 	....
 };
 ```
-3. Update the referer url check in  "app.js" with the url of your frontends url (local and production):
+3. Update the referer url check in  "app.js" with the url of your frontend (local and production):
 
 ```javaScript
 isRefererValid : function(referer){
