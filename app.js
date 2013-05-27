@@ -203,7 +203,7 @@ app.get('/query', function(req, res){
 		if(url && utils.isValidURL(url)){
 			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];			
 			try{
-				phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:15000}, function(err, stdout, stderr) {
+				phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:25000}, function(err, stdout, stderr) {
 					utils.parsePhantomResponse(err, stdout, stderr, function(jsonResponse){
 							res.jsonp(200, jsonResponse);
 						}, function(errorMsg){
