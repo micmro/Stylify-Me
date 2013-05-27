@@ -7,4 +7,21 @@ We host our app on Heroku (http://heroku.com) using the multi buildpack (https:/
 
 See it live at http://stylifyme.com
 
-This repo only contains the web service.
+This repo only contains the web service, you can query it from the front end like this:
+
+```javaScript
+$.ajax({
+	dataType: "jsonp",
+	url: "http://youreServiceUrl.com/query?url="+ url,
+	success: function(data){
+		if(data["error"]){
+			alert("Error: " + data["error"]);
+			return;
+		}
+		//PROCESS the result		
+	},
+	timeout : 10000
+}).fail(function(){
+	alert("Could not query site, the service might be down, please try again later.");
+});
+```
