@@ -1,5 +1,4 @@
-Stylify Me
-==========
+# Stylify Me
 
 A Style Guide Generator - using [NodeJS](http://nodejs.org/) and [PhantomJS](http://phantomjs.org) a command line webkit browser.
 See it live at http://stylifyme.com
@@ -8,10 +7,9 @@ This repo only contains the web service.
 We host our app on [Heroku](http://heroku.com) using the [multi buildpack](https://github.com/ddollar/heroku-buildpack-multi).
 
 
-Running the service locally
----------------------------
+## Running the service locally
 1. Make sure you have [NodeJS](http://nodejs.org/) installed and running
-2. Download [PhantomJS](http://phantomjs.org) and copy it to "REPOFOLDER/vendor/phantomjs/bin/phantomjs" or update the path in *app.js*
+2. Download [PhantomJS](http://phantomjs.org) and copy it to *REPOFOLDER/vendor/phantomjs/bin/phantomjs* or update the path in *app.js*
 ```javaScript
 var config = {
 	binPath : "vendor/phantomjs/bin/phantomjs"
@@ -31,8 +29,7 @@ isRefererValid : function(referer){
 5. query *http://localhost:5000/query?url=http%3A%2F%2Fgoogle.com* (assuming you run your app on port 5000) and you should be able to see a JSON response
 
 
-Frontend
---------
+### Frontend
 This repo only contains the web service, you can query it from the front end like this:
 
 ```javaScript
