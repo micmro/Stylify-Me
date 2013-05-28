@@ -59,7 +59,7 @@ var utils = {
 	},
 	
 	isRefererValid : function(referer){
-		var validRefs = ["http://stylifyme.com", "http://www.stylifyme.com", "http://stylify.herokuapp.com", "http://localhost:9185", "http://localhost:" + app.get('port')]
+		var validRefs = ["http://stylifyme.com", "http://www.stylifyme.com", "http://stylify.herokuapp.com", "http://localhost:9185", "http://localhost:7210", "http://localhost:" + app.get('port')]
 			,isvalid = false;
 		for(valRef in validRefs){
 			if(referer.indexOf(validRefs[valRef]) == 0){
@@ -76,11 +76,11 @@ var utils = {
 		var jsonResponse = {};
 		try{
 			if(err || stderr){
-				console.log("ERR:PHANTOM>",stderr||err);
+				console.log("ERR:PHANTOM>" + (stderr||err));
 				onerror(stdout,"111");
 			} else if(stdout.indexOf("ERROR") === 0 || stdout.indexOf("PHANTOM ERROR:") === 0){
 
-				console.log("ERR:PHANTOM>", stdout);
+				console.log("ERR:PHANTOM>" + stdout);
 
 
 				var errorCode = stdout.match(/ERROR\((\d+)\)/)[1];
@@ -137,13 +137,13 @@ app.get('/renderpdfview', function(req, res){
 			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];			
 			try{
 				phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:25000}, function(err, stdout, stderr) {
-						utils.parsePhantomResponse(err, stdout, stderr, function(jsonResponse){
+					utils.parsePhantomResponse(err, stdout, stderr, function(jsonResponse){
 							res.render('pdfbase', { title: 'Stylify Me - Extract', pageUrl: url, data : jsonResponse });
 						}
 						,function(errorMsg, errorCode){
 							res.jsonp(503, { "error": errorMsg, "errorCode" : errorCode||"000" });
 							phantomProcess.kill();
-						});
+					});
 				});
 			}catch(err){
 				phantomProcess.kill();
