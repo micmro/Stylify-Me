@@ -52,7 +52,7 @@ phantom.onError = function(msg, trace) {
             msgStack.push(' -> ' + (t.file||t.sourceURL) + ': ' + t.line + (t.function ? ' (in function ' + t.function + ')' : ''));
         });
     }
-    console.error(msgStack.join('\n'));
+    console.error(msgStack.join(' | '));
 	phantom.exit();
 };
 
