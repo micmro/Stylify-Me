@@ -87,7 +87,7 @@ var utils = {
 				switch(errorCode){
 					case "404" : 	onerror("Fail to load the current url", errorCode);
 									break;
-					case "502" : 	onerror("Fail to parse site - the site might try to redirect", errorCode);
+					case "502" : 	onerror("Fail to parse site - the site might try to redirect or has invalid markup", errorCode);
 									break;
 					case "400" : 	onerror("Invalid url", errorCode);
 									break;
