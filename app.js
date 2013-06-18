@@ -11,7 +11,7 @@ var config = {
 	 binPath : "vendor/phantomjs/bin/phantomjs"
 	, crawlerFilePath : "stylify-crawler.js"
 	, rasterizeFilePath : "phantom-rasterize.js"
-	, screenshotCacheTime : 60000 * 1 //in ms (1000ms = 1 sec)
+	, screenshotCacheTime : 5000 * 1 //in ms (1000ms = 1 sec)
 };
 
 var app = express();
@@ -46,12 +46,7 @@ app.use(function(err, req, res, next){
 
 var utils = {
 	isValidURL : function(url){
-		var urlRegEx = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-		if(urlRegEx.test(url)){
-			return true;
-		}else{
-			return false;
-		}
+		return (/[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi).test(url);
 	},
 	deleteFile : function(filePath){
 		try{
@@ -62,8 +57,9 @@ var utils = {
 			console.log("ERR:file delete error", e);
 		}
 	},
+	
 	isRefererValid : function(referer){
-		var validRefs = ["http://stylifyme.com", "http://www.stylifyme.com", "http://stylify.herokuapp.com", "http://localhost:9185", "http://localhost:" + app.get('port')]
+		var validRefs = ["http://stylifyme.com", "http://www.stylifyme.com", "http://stylify.herokuapp.com", "http://localhost:9185", "http://localhost:7210", "http://localhost:" + app.get('port')]
 			,isvalid = false;
 		for(valRef in validRefs){
 			if(referer.indexOf(validRefs[valRef]) == 0){
@@ -80,11 +76,23 @@ var utils = {
 		var jsonResponse = {};
 		try{
 			if(err || stderr){
-				console.log("ERR:PHANTOM>",stderr);
-				onerror(stdout);
-			} else if(stdout.indexOf("ERROR:") === 0 || stdout.indexOf("PHANTOM ERROR:") === 0){
-				console.log("ERR:PHANTOM>", stdout);
-				onerror(stdout);
+				console.log("ERR:PHANTOM>" + (stderr||err));
+				onerror(stdout||"Error parsing site - please try again ","111");
+			} else if(stdout.indexOf("ERROR") === 0 || stdout.indexOf("PHANTOM ERROR:") === 0){
+
+				console.log("ERR:PHANTOM>" + stdout);
+
+
+				var errorCode = stdout.match(/ERROR\((\d+)\)/)[1];
+				switch(errorCode){
+					case "404" : 	onerror("Fail to load the current url - please make sure you don't have typos", errorCode);
+									break;
+					case "502" : 	onerror("Fail to parse site - the site might try to redirect or has invalid markup", errorCode);
+									break;
+					case "400" : 	onerror("Invalid url - please make sure you don't have typos", errorCode);
+									break;
+					default :  onerror(stdout.replace("ERROR:","").replace(/\r\n/, " ")||"error", errorCode||"000");
+				}
 			} else if (stdout.indexOf("CONSOLE:") === 0) {
 				jsonResponse = JSON.parse(stdout.replace(/(CONSOLE:).*[\n\r]/gi,""));
 				onsuccess(jsonResponse);
@@ -98,6 +106,7 @@ var utils = {
 			}
 		}catch(e){
 			console.log(e);
+			onerror("Fail to parse response","999");
 		}
 	},
 	makeFilename : function(url){
@@ -121,51 +130,63 @@ app.get('/renderpdfview', function(req, res){
 		,jsonResponse = {}
 		,showImage = true
 		,debugMode = false
-		,url, childArgs;
+		,url, childArgs, phantomProcess;
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
 			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];			
-			
-			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
-					utils.parsePhantomResponse(err, stdout, stderr,function(jsonResponse){
-						res.render('pdfbase', { title: 'Stylify Me - Extract', pageUrl: url, data : jsonResponse });
-					}
-					,function(stdout){
-						res.jsonp(503, { "error": stdout });
+			try{
+				phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:25000}, function(err, stdout, stderr) {
+					utils.parsePhantomResponse(err, stdout, stderr, function(jsonResponse){
+							res.render('pdfbase', { title: 'Stylify Me - Extract', pageUrl: url, data : jsonResponse });
+						}
+						,function(errorMsg, errorCode){
+							phantomProcess.kill();
+							res.jsonp(503, { "error": errorMsg, "errorCode" : errorCode||"000" });
 					});
-			});
+				});
+			}catch(err){
+				phantomProcess.kill();
+				console.log("ERR:Could not create render pdf child process", url);
+				res.jsonp(503, { "error": "Eror creating pdf" });
+			}
 		}else{
-			res.jsonp(400, { "error": 'Invalid or missing "url" parameter' });
 			console.log("ERR:Invalid or missing url parameter", url);
+			res.jsonp(503, { "error": 'Invalid or missing "url" parameter' });
 		}
 	}else{
-		res.jsonp(400, { "error": 'Invalid referer' });
+		res.jsonp(401, { "error": 'Invalid referer' });
 	}
 });
 
 //returns PDF file
 app.get('/getpdf', function(req, res){
 	var referer = req.get("Referer")||"http://stylify.herokuapp.com"
-		,url, childArgs, filename;
+		,url, childArgs, filename, phantomProcess;
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
 			filename = "public/pdf/temp" + utils.makeFilename(url) + "_" + new Date().getTime().toString() + ".pdf";
 			childArgs = [config.rasterizeFilePath, req.protocol + "://" + req.get('host') + "/renderpdfview?url="+encodeURIComponent(url), filename, "A4"];			
-			
-			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
-				console.log("LOG: CREATED PDF", filename);
-				res.download(filename, "stylify-me "+utils.makeFilename(url)+".pdf", function(err){
-					utils.deleteFile(filename);
+			try{
+				phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:50000}, function(err, stdout, stderr) {
+					console.log("LOG: CREATED PDF", filename);
+					res.download(filename, "stylify-me "+utils.makeFilename(url)+".pdf", function(err){
+						utils.deleteFile(filename);
+						phantomProcess.kill();
+					});
 				});
-			});
+			}catch(err){
+				phantomProcess.kill();
+				console.log("ERR:Could not create get pdf child process", url);
+				res.jsonp(200, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable', "errorCode" : "503"});
+			}
 		}else{
-			res.jsonp(400, { "error": 'Invalid or missing "url" parameter' });
 			console.log("ERR:Invalid or missing url parameter", url);
+			res.jsonp(200, { "error": 'Invalid or missing "url" parameter' });
 		}
 	}else{
-		res.jsonp(400, { "error": 'Invalid referer' });
+		res.jsonp(401, { "error": 'Invalid referer' });
 	}
 });
 
@@ -175,29 +196,49 @@ app.get('/query', function(req, res){
 	var referer = req.get("Referer")||"http://stylify.herokuapp.com"
 		,jsonResponse = {}
 		,showImage = true
-		,debugMode = true
-		,url, childArgs;
+		,debugMode = false
+		,url, childArgs, phantomProcess;
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
 		if(url && utils.isValidURL(url)){
 			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];			
-			
-			childProcess.execFile(config.binPath, childArgs, function(err, stdout, stderr) {
-					utils.parsePhantomResponse(err, stdout, stderr,function(jsonResponse){
-						res.jsonp(jsonResponse);
-					}
-					,function(stdout){
-						res.jsonp(503, { "error": stdout.replace(/\r\n/, " ") });
+			try{
+				phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:25000}, function(err, stdout, stderr) {
+					utils.parsePhantomResponse(err, stdout, stderr, function(jsonResponse){
+							res.jsonp(200, jsonResponse);
+						}, function(errorMsg, errorCode){
+							phantomProcess.kill();
+							res.jsonp(200,{"error": errorMsg, "errorCode" : errorCode||"000"});
 					});
-			});
+				});
+			}catch(err){
+				phantomProcess.kill();
+				console.log("ERR:Could not create child process" + err + "-"+ url);
+				res.jsonp(200, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable', "errorCode" : "503"});
+			}
 		}else{
-			res.jsonp(400, { "error": 'Invalid or missing "url" parameter' });
 			console.log("ERR:Invalid or missing url parameter", url);
+			res.jsonp(200, { "error": 'Invalid or missing "url" parameter', "errorCode" : "500"});
 		}
 	}else{
-		res.jsonp(400, { "error": 'Invalid referer' });
+		res.jsonp(401, { "error": 'Invalid referer' });
 	}
 });
+
+
+//returns phantom js version number
+app.get('/version', function(req, res){
+	var childArgs = ["--version"], phantomProcess;			
+	try{
+		phantomProcess = childProcess.execFile(config.binPath, childArgs, {timeout:5000}, function(err, stdout, stderr) {
+			res.jsonp(200, (err||stdout||stderr).replace(/[\n\r]+/g,""));
+		});
+	}catch(err){
+		phantomProcess.kill();
+
+	}
+});
+
 
 //Handle 404
 /*app.get("[^/temp-img]", function(req, res) {
