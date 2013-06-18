@@ -72,7 +72,7 @@ var utils = {
 		}
 		return isvalid;
 	},
-	
+
 	parsePhantomResponse : function(err, stdout, stderr, onsuccess, onerror){
 		var jsonResponse = {};
 		try{
@@ -102,6 +102,7 @@ var utils = {
 			}else{
 				jsonResponse = JSON.parse(stdout);
 				onsuccess(jsonResponse);
+
 				//delete thumbnail after a bit
 				setTimeout(utils.deleteFile, config.screenshotCacheTime, path.join(__dirname, "public", jsonResponse.thumbPath));
 			}
@@ -131,6 +132,7 @@ app.get('/renderpdfview', function(req, res){
 		,jsonResponse = {}
 		,showImage = true
 		,debugMode = false
+		,test = "durp"
 		,url, childArgs, phantomProcess;
 	if(utils.isRefererValid(referer)){
 		url = req.query["url"];
