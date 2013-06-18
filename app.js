@@ -72,6 +72,7 @@ var utils = {
 		}
 		return isvalid;
 	},
+	
 	parsePhantomResponse : function(err, stdout, stderr, onsuccess, onerror){
 		var jsonResponse = {};
 		try{
