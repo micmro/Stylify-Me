@@ -123,7 +123,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/about', function(req, res){
-	 res.redirect(301, "http://stylifyme.com/about-us.html");
+	 res.redirect(301, "http://stylifyme.com/about-us");
 });
 
 //renders html for PDF
