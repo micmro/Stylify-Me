@@ -10,8 +10,10 @@ page.zoomFactor = 1;
 page.viewportSize = { width: 1024, height: 768 };
 var config = {
 	tempImgPath : "public/temp-img/",
-	jQueryPath : "lib/jquery.2.0.3.min.js"
+	jQueryPath : "lib/jquery.2.0.3.min.js",
+	userAgent: page.settings.userAgent //modify this to use custom user agent string
 };
+page.settings.userAgent = config.userAgent;
 
 //print out console logs on page level
 page.onConsoleMessage = function (msg) { 
