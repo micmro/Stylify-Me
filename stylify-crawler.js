@@ -10,8 +10,12 @@ page.zoomFactor = 1;
 page.viewportSize = { width: 1024, height: 768 };
 var config = {
 	tempImgPath : "public/temp-img/",
-	jQueryPath : "lib/jquery.2.0.3.min.js"
+	jQueryPath : "lib/jquery.2.0.3.min.js",
+	//pretend to be Chrome 37 - change this if you want to pretend to be another browser
+	userAgent : "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36"
 };
+
+page.settings.userAgent = config.userAgent;
 
 //print out console logs on page level
 page.onConsoleMessage = function (msg) { 
