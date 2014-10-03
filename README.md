@@ -10,7 +10,8 @@ We host our app on [Heroku](http://heroku.com) using the [multi buildpack](https
 ## Running the service locally
 1. Make sure you have [NodeJS](http://nodejs.org/) installed and running
 2. install dependencies with npm `npm install`
-2. Download [PhantomJS](http://phantomjs.org) and copy it to *REPOFOLDER/vendor/phantomjs/bin/phantomjs* or update the path in *app.js*
+2. Download [PhantomJS](http://phantomjs.org) and copy it to `REPOFOLDER/vendor/phantomjs/bin/phantomjs` or update the path in `app.js`
+
 	```javaScript
 	var config = {
 		binPath : "vendor/phantomjs/bin/phantomjs"
@@ -26,8 +27,9 @@ We host our app on [Heroku](http://heroku.com) using the [multi buildpack](https
 			.....
 		}
 	```
-4. Start the nodeJs app with *node app.js*
+4. Start the nodeJs app with `node app.js`
 5. Query *http://localhost:5000/query?url=http%3A%2F%2Fgoogle.com* (assuming you run your app on port 5000) and you should be able to see a JSON response
+	I recomend using [Postman](http://www.getpostman.com) for debugging your api
 
 
 ### Frontend
