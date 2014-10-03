@@ -4,6 +4,7 @@ var express = require('express')
 	, http = require('http')
 	, path = require('path')
 	, fs = require('fs')
+	, bodyParser = require('body-parser')
 	, childProcess = require('child_process');
 
 /* Variables / Config */
@@ -16,27 +17,25 @@ var config = {
 
 var app = express();
 
-app.configure(function(){
-	app.set('port', process.env.PORT || 5000);
-	app.use(express.compress());
-	app.set('views', __dirname + '/views');
-	app.set('view engine', 'ejs');
-	app.use(express.favicon(path.join(__dirname + '/public/favicon.ico'))); 
-	app.use(express.logger('dev'));
-	app.use(express.bodyParser());
-	app.use(express.methodOverride());
-	app.use(app.router);
-	app.use(express.static(path.join(__dirname, 'public')));  
-});
+app.set('port', process.env.PORT || 5000);
+app.use(express.compress());
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(express.favicon(path.join(__dirname + '/public/favicon.ico'))); 
+app.use(express.logger('dev'));
+app.use(bodyParser.json());
+app.use(app.router);
+app.use(express.static(path.join(__dirname, 'public')));  
 
 
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
-});
 
-app.configure('production', function(){
+if( app.get('env') === 'development'){
+	app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+}
+
+if( app.get('env') === 'production'){
   app.use(express.errorHandler()); 
-});
+}
 
 app.use(function(err, req, res, next){
 	console.error(err.stack);
