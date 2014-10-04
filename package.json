@@ -1,6 +1,6 @@
 {
-  "name": "stilify",
-  "version": "0.0.1",
+  "name": "stylify-me",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "start": "node app.js"
