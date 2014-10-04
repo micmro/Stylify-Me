@@ -77,7 +77,7 @@ var utils = {
 		try{
 			if(err || stderr){
 				console.log("ERR:PHANTOM>" + (stderr||err));
-				onerror(stdout||"Error parsing site - please try again ","111");
+				onerror(stdout||err||"Error parsing site - please try again ","111");
 			} else if(stdout.indexOf("ERROR") === 0 || stdout.indexOf("PHANTOM ERROR:") === 0){
 
 				console.log("ERR:PHANTOM>" + stdout);
