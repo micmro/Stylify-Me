@@ -4,7 +4,7 @@ var page = require('webpage').create(),
     address, isDebug, output, size;
 
 /*phantom settings*/
-phantom.cookiesEnabled = false;
+phantom.cookiesEnabled = true;
 
 
 //print out console logs on page level

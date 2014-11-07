@@ -1,6 +1,6 @@
 # Stylify Me
 
-A Style Guide Generator - using [NodeJS](http://nodejs.org/) and [PhantomJS](http://phantomjs.org) a command line webkit browser.
+A Style Guide Generator - using [NodeJS](http://nodejs.org/) and [PhantomJS](http://phantomjs.org), a command line webkit browser.
 See it live at http://stylifyme.com
 
 This repo only contains the web service.
@@ -9,7 +9,7 @@ We host our app on [Heroku](http://heroku.com) using the [multi buildpack](https
 
 ## Running the service locally
 1. Make sure you have [NodeJS](http://nodejs.org/) installed and running
-2. install dependencies with npm `npm install`
+2. Install dependencies with npm `npm install`
 2. Download [PhantomJS](http://phantomjs.org) and copy it to `REPOFOLDER/vendor/phantomjs/bin/phantomjs` or update the path in `app.js`
 
 	```javaScript
