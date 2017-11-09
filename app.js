@@ -45,7 +45,7 @@ app.use(function(err, req, res, next){
 
 var utils = {
 	isValidURL : function(url){
-		return (/[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi).test(url);
+		return (/[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,18}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi).test(url);
 	},
 	deleteFile : function(filePath){
 		try{
