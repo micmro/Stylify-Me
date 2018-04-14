@@ -146,7 +146,7 @@ app.get('/renderpdfview', function (req, res) {
 	if (utils.isRefererValid(referer)) {
 		url = req.query["url"];
 		if (url && utils.isValidURL(url)) {
-			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];
+			childArgs = [config.crawlerFilePath, req.query["url"], '--ssl-protocol=any'], showImage, debugMode;
 			try {
 				phantomProcess = childProcess.execFile(config.binPath, childArgs, { timeout: 25000 }, function (err, stdout, stderr) {
 					utils.parsePhantomResponse(err, stdout, stderr, function (jsonResponse) {
