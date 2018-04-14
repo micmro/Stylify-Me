@@ -8,9 +8,9 @@ phantom.cookiesEnabled = true;
 
 
 //print out console logs on page level
-page.onConsoleMessage = function (msg) { 
+page.onConsoleMessage = function (msg) {
     if (msg.indexOf("Unsafe JavaScript attempt to access frame with URL") > -1){
-        return; 
+        return;
     }
     if(isDebug){
         console.log('CONSOLE: ' + msg);
@@ -24,6 +24,7 @@ page.onAlert = function (msg) {
 
 //error tracing
 page.onError = function(msg, trace) {
+    // Just log page errors
     var msgStack = ['ERROR: ' + msg];
     if (trace) {
         msgStack.push('TRACE:');
@@ -32,7 +33,6 @@ page.onError = function(msg, trace) {
         });
     }
     console.error(msgStack.join('\n'));
-    phantom.exit();
     return;
 };
 
