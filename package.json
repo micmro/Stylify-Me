@@ -1,17 +1,23 @@
 {
   "name": "stylify-me",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "body-parser": "^1.9.0",
+    "body-parser": "^1.18.2",
+    "compression": "^1.7.2",
     "ejs": "*",
-    "express": "^3.17.5"
+    "errorhandler": "^1.5.0",
+    "express": "^4.16.3",
+    "morgan": "^1.9.0",
+    "phantomjs-prebuilt": "^2.1.16",
+    "serve-favicon": "^2.5.0",
+    "serve-static": "^1.13.2"
   },
   "engines": {
-    "node": "0.10.x",
-    "npm": "1.2.x"
+    "node": "8.x.x",
+    "npm": "5.x.x"
   }
 }

@@ -1,15 +1,21 @@
 
 /* Module dependencies.*/
-var express = require('express')
-	, http = require('http')
+var http = require('http')
 	, path = require('path')
 	, fs = require('fs')
+	, childProcess = require('child_process')
+	, express = require('express')
 	, bodyParser = require('body-parser')
-	, childProcess = require('child_process');
+	, errorhandler = require('errorhandler')
+	, morgan = require('morgan')
+	, serveFavicon = require('serve-favicon')
+	, serveStatic = require('serve-static')
+	, compression = require('compression')
+	, phantomjs = require('phantomjs-prebuilt');
 
 /* Variables / Config */
 var config = {
-	binPath: "vendor/phantomjs/bin/phantomjs"
+	binPath: phantomjs.path
 	, crawlerFilePath: "stylify-crawler.js"
 	, rasterizeFilePath: "phantom-rasterize.js"
 	, screenshotCacheTime: 5000 * 1 //in ms (1000ms = 1 sec)
@@ -18,23 +24,22 @@ var config = {
 var app = express();
 
 app.set('port', process.env.PORT || 5000);
-app.use(express.compress());
+app.use(compression());
+app.use(morgan('short'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-app.use(express.favicon(path.join(__dirname + '/public/favicon.ico')));
-app.use(express.logger('dev'));
+app.use(serveFavicon(path.join(__dirname + '/public/favicon.ico')));
 app.use(bodyParser.json());
-app.use(app.router);
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(serveStatic(path.join(__dirname, 'public')));
 
 
 
 if (app.get('env') === 'development') {
-	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+	app.use(errorhandler({ dumpExceptions: true, showStack: true }));
 }
 
 if (app.get('env') === 'production') {
-	app.use(express.errorHandler());
+	app.use(errorhandler());
 }
 
 app.use(function (err, req, res, next) {
