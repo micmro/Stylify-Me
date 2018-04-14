@@ -11,8 +11,8 @@ page.viewportSize = { width: 1024, height: 768 };
 var config = {
 	tempImgPath : "public/temp-img/",
 	jQueryPath : "lib/jquery-2.1.1.min.js",
-	//pretend to be Chrome 65 - change this if you want to pretend to be another browser
-	userAgent : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"
+	//pretend to be Safari 9 - (similar engine as PhantomJS) change this if you want to pretend to be another browser
+	userAgent : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/601.1.56 (KHTML, like Gecko) Version/9.0 Safari/537.86.1"
 };
 
 page.settings.userAgent = config.userAgent;
