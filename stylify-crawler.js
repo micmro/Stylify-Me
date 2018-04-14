@@ -11,16 +11,16 @@ page.viewportSize = { width: 1024, height: 768 };
 var config = {
 	tempImgPath : "public/temp-img/",
 	jQueryPath : "lib/jquery-2.1.1.min.js",
-	//pretend to be Chrome 37 - change this if you want to pretend to be another browser
-	userAgent : "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36"
+	//pretend to be Chrome 65 - change this if you want to pretend to be another browser
+	userAgent : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"
 };
 
 page.settings.userAgent = config.userAgent;
 
 //print out console logs on page level
-page.onConsoleMessage = function (msg) { 
+page.onConsoleMessage = function (msg) {
 	if (msg.indexOf("Unsafe JavaScript attempt to access frame with URL") > -1){
-		return; 
+		return;
 	}
 	if(isDebug){
 		console.log('CONSOLE: ' + msg);
@@ -86,7 +86,7 @@ function parsePage (page, address){
 			if(this.length>0){
 			    return this;
 			}else{
-				return false; 
+				return false;
 			}
 		};
 
@@ -155,12 +155,12 @@ function parsePage (page, address){
 		var body = $jq(document.body);
 		var naMsg = "N/A";
 
-		
+
 		var coloursBgReturn = [], coloursTextReturn = [];
 		var colourAttributes = {}, result = {};
 		var colour;
 		var colourOccurences = {};
-    	
+
 		//select images to return
 		if(images.length >= 3){
 			img1 = images[parseInt(images.length/2)-1];
@@ -220,7 +220,7 @@ function parsePage (page, address){
 			"title" : document.title
 			//, "colourOccurences" : colourOccurences
 			, "coloursText" : coloursTextReturn
-			, "coloursBg" : coloursBgReturn			
+			, "coloursBg" : coloursBgReturn
 			, "typography" : {
 				"h1" : getTypeSet(h1, "Header 1")
 				,"h2" : getTypeSet(h2, "Header 2")
@@ -230,14 +230,14 @@ function parsePage (page, address){
 				,"h6" : getTypeSet(h6, "Header 6")
 				,"body" : getTypeSet(baseSelector, "Body")
 			}
-			
+
 			, "p-text-colour" : rgb2hex(p.css("color")||naMsg)
-			, "a-text-colour" : rgb2hex(a.css("color")||naMsg)	
+			, "a-text-colour" : rgb2hex(a.css("color")||naMsg)
 			, "main-background-colour" : rgb2hex(baseSelector.css("background-color")||naMsg)
 			, "background-img" : body.css("background-image")||naMsg
 			, "background-colour" : rgb2hex(body.css("background-color")||naMsg)
 			, "img-paths" : imgPaths||naMsg
-			
+
 		};
 	});
 };
@@ -252,12 +252,12 @@ try{
 		address = args[1];
 		saveImage = args[2] !== "false";
 		isDebug = args[3] === "true";
-		if(utils.isValidURL(address)){	
-			page.open(address, function (status) {	    
+		if(utils.isValidURL(address)){
+			page.open(address, function (status) {
 			    if (status == 'success'){
 		        	//delay analizing a bit
 		        	window.setTimeout(function () {
-			        	if(page.injectJs(config.jQueryPath)){    				
+			        	if(page.injectJs(config.jQueryPath)){
 				    		var result = parsePage(page, address)
 				    			,imgPath = config.tempImgPath + utils.makeFilename(address) + "_" + new Date().getTime().toString() + Math.floor(Math.random()*10000) + '.png';
 				    		if(!result){
@@ -280,7 +280,7 @@ try{
 		            console.log('ERROR(404)'); //Fail to load the current url
 		            phantom.exit();
 				}
-			});	
+			});
 		} else {
 			console.error("ERROR(400)"); //invalid url
 			phantom.exit();

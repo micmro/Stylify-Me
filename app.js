@@ -63,7 +63,12 @@ var utils = {
 	},
 
 	isRefererValid: function (referer) {
-		var validRefs = ["http://stylifyme.com", "http://www.stylifyme.com", "http://stylify.herokuapp.com", "http://localhost:9185", "http://localhost:7210", "http://localhost:" + app.get('port')]
+		var validRefs = ["http://stylifyme.com",
+						"http://www.stylifyme.com",
+						"http://stylify.herokuapp.com",
+						"http://localhost:9185",
+						"http://localhost:7210",
+						"http://localhost:" + app.get('port')]
 			, isvalid = false;
 		for (valRef in validRefs) {
 			if (referer.indexOf(validRefs[valRef]) == 0) {
