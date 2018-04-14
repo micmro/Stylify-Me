@@ -149,20 +149,20 @@ app.get('/renderpdfview', function (req, res) {
 					}
 						, function (errorMsg, errorCode) {
 							phantomProcess.kill();
-							res.jsonp(503, { "error": errorMsg, "errorCode": errorCode || "000" });
+							res.status(503).jsonp({ "error": errorMsg, "errorCode": errorCode || "000" });
 						});
 				});
 			} catch (err) {
 				phantomProcess.kill();
 				console.log("ERR:Could not create render pdf child process", url);
-				res.jsonp(503, { "error": "Eror creating pdf" });
+				res.status(503).jsonp({ "error": "Eror creating pdf" });
 			}
 		} else {
 			console.log("ERR:Invalid or missing url parameter", url);
-			res.jsonp(503, { "error": 'Invalid or missing "url" parameter' });
+			res.status(503).jsonp({ "error": 'Invalid or missing "url" parameter' });
 		}
 	} else {
-		res.jsonp(401, { "error": 'Invalid referer' });
+		res.status(401).jsonp({ "error": 'Invalid referer' });
 	}
 });
 
@@ -186,14 +186,14 @@ app.get('/getpdf', function (req, res) {
 			} catch (err) {
 				phantomProcess.kill();
 				console.log("ERR:Could not create get pdf child process", url);
-				res.jsonp(200, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable', "errorCode": "503" });
+				res.status(200).jsonp({ "error": 'Sorry, our server experiences a high load and the service is currently unavailable', "errorCode": "503" });
 			}
 		} else {
 			console.log("ERR:Invalid or missing url parameter", url);
-			res.jsonp(200, { "error": 'Invalid or missing "url" parameter' });
+			res.status(200).jsonp({ "error": 'Invalid or missing "url" parameter' });
 		}
 	} else {
-		res.jsonp(401, { "error": 'Invalid referer' });
+		res.status(401).jsonp({ "error": 'Invalid referer' });
 	}
 });
 
@@ -212,23 +212,23 @@ app.get('/query', function (req, res) {
 			try {
 				phantomProcess = childProcess.execFile(config.binPath, childArgs, { timeout: 25000 }, function (err, stdout, stderr) {
 					utils.parsePhantomResponse(err, stdout, stderr, function (jsonResponse) {
-						res.jsonp(200, jsonResponse);
+						res.status(200).jsonp(jsonResponse);
 					}, function (errorMsg, errorCode) {
 						phantomProcess.kill();
-						res.jsonp(200, { "error": errorMsg, "errorCode": errorCode || "000" });
+						res.status(200).jsonp({ "error": errorMsg, "errorCode": errorCode || "000" });
 					});
 				});
 			} catch (err) {
 				phantomProcess.kill();
 				console.log("ERR:Could not create child process" + err + "-" + url);
-				res.jsonp(200, { "error": 'Sorry, our server experiences a high load and the service is currently unavailable', "errorCode": "503" });
+				res.status(200).jsonp({ "error": 'Sorry, our server experiences a high load and the service is currently unavailable', "errorCode": "503" });
 			}
 		} else {
 			console.log("ERR:Invalid or missing url parameter", url);
-			res.jsonp(200, { "error": 'Invalid or missing "url" parameter', "errorCode": "500" });
+			res.status(200).jsonp({ "error": 'Invalid or missing "url" parameter', "errorCode": "500" });
 		}
 	} else {
-		res.jsonp(401, { "error": 'Invalid referer' });
+		res.status(401).jsonp({ "error": 'Invalid referer' });
 	}
 });
 
@@ -238,7 +238,7 @@ app.get('/version', function (req, res) {
 	var childArgs = ["--version"], phantomProcess;
 	try {
 		phantomProcess = childProcess.execFile(config.binPath, childArgs, { timeout: 5000 }, function (err, stdout, stderr) {
-			res.jsonp(200, (err || stdout || stderr).replace(/[\n\r]+/g, ""));
+			res.status(200).jsonp((err || stdout || stderr).replace(/[\n\r]+/g, ""));
 		});
 	} catch (err) {
 		phantomProcess.kill();
