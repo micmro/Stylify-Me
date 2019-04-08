@@ -3,7 +3,7 @@
 const http = require('http')
 	, path = require('path')
 	, fs = require('fs')
-	, url = require('url')
+	, URL = require('url').URL
 	, childProcess = require('child_process')
 	, express = require('express')
 	, bodyParser = require('body-parser')
