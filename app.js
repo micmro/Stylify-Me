@@ -3,6 +3,7 @@
 const http = require('http')
 	, path = require('path')
 	, fs = require('fs')
+	, url = require('url')
 	, childProcess = require('child_process')
 	, express = require('express')
 	, bodyParser = require('body-parser')
@@ -50,7 +51,11 @@ app.use((err, req, res, next) => {
 
 const utils = {
 	isValidURL: (urlPath) => {
-		return (/[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,18}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi).test(urlPath);
+		const maybeUrl = new URL(urlPath);
+		if(!maybeUrl.hostname || !/http[s]?:/.test(maybeUrl.protocol)) {
+			return false;
+		}
+		return true;
 	},
 	deleteFile: (filePath) => {
 		try {
@@ -121,7 +126,7 @@ const utils = {
 		}
 	},
 	makeFilename: (url) => {
-		return url.replace(/http:\/\//, "").replace(/[\/:/]/g, "_");
+		return url.replace(/https?:\/\//, "").replace(/[\/:/]/g, "_");
 	}
 }
 
