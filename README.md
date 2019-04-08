@@ -4,7 +4,7 @@ A Style Guide Generator - using [NodeJS](http://nodejs.org/) and [PhantomJS](htt
 See it live at http://stylifyme.com
 
 This repo only contains the web service.
-We host our app on [Heroku](http://heroku.com) using the [multi buildpack](https://github.com/ddollar/heroku-buildpack-multi).
+We host our app on [Heroku](http://heroku.com).
 
 
 ## Running the service locally
