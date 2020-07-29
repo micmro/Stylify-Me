@@ -140,7 +140,7 @@ app.get('/about', (req, res) => {
 	res.redirect(301, "http://stylifyme.com/about-us");
 });
 
-//renders html for PDF
+// renders html for PDF
 app.get('/renderpdfview', (req, res) => {
 	const referer = req.get("Referer") || "http://stylify.herokuapp.com"
 		, showImage = true
@@ -182,7 +182,7 @@ app.get('/renderpdfview', (req, res) => {
 	}
 });
 
-//returns PDF file
+// returns PDF file
 app.get('/getpdf', (req, res) => {
 	const referer = req.get("Referer") || "http://stylify.herokuapp.com";
 	let url, childArgs, filename, phantomProcess;
@@ -214,7 +214,7 @@ app.get('/getpdf', (req, res) => {
 });
 
 
-//returns stylify json
+// returns stylify json
 app.get('/query', (req, res) => {
 	const referer = req.get("Referer") || "http://stylify.herokuapp.com"
 		, showImage = true
@@ -248,7 +248,7 @@ app.get('/query', (req, res) => {
 });
 
 
-//returns phantom js version number
+// returns phantom js version number
 app.get('/version', (req, res) => {
 	const childArgs = ["--version"];
 	let phantomProcess;
@@ -263,7 +263,7 @@ app.get('/version', (req, res) => {
 });
 
 
-//Handle 404
+// Handle 404
 /*app.get("[^/temp-img]", function(req, res) {
    // res.redirect(301, "http://stylifyme.com");
 });*/
