@@ -1,8 +1,8 @@
-<% include header.ejs %>
+<%- include('header.ejs'); -%>
 
 <div id="main-holder" class="container_16">
 	<div class="grid_13">
-		<h1><%= pageUrl.replace("http://","") %></h1>    
+		<h1><%= pageUrl.replace("http://","") %></h1>
 	</div>
 	<div class="grid_3 logo">
 		Stylify Me
@@ -12,12 +12,12 @@
 
 
 	<div class="grid_16">
-		<h2>Background Colours</h2>    
+		<h2>Background Colours</h2>
 	</div>
 
 	<% for(var i=0; i<data["coloursBg"].length; i++) {%>
 		<% if(i<8){ %>
-	   <div class="grid_2">    
+	   <div class="grid_2">
 			<figure id="color-<%= i+1%>" class="swatch-wrap">
 				<div class="swatch-holder" style="background-color:<%= data["coloursBg"][i][0] %>"></div>
 				<figcaption>
@@ -30,12 +30,12 @@
 	<% } %>
 
 	<div class="grid_16">
-		<h2>Text Colours</h2>    
+		<h2>Text Colours</h2>
 	</div>
 
 	<% for(var i=0; i<data["coloursText"].length; i++) {%>
 		<% if(i<8){ %>
-	   <div class="grid_2">    
+	   <div class="grid_2">
 			<figure id="color-<%= i+1%>" class="swatch-wrap">
 				<div class="swatch-holder" style="background-color:<%= data["coloursText"][i][0] %>"></div>
 				<figcaption>
@@ -47,18 +47,18 @@
 		<% } %>
 	<% } %>
 
-	
+
 
 
 	<h2 class="grid_16">Typography</h2>
-		
+
 
 	<dl class="grid_16 grid-dl">
-		
+
 		<% for(var i=1; i<=6; i++){ %>
 			<% var typo = data.typography["h"+i]; %>
 			<dt id="result-header-h<%= i %>-dt" class="<%= typo['font']=='N/A' ? 'not-set' : '' %> <%= i==1?'first' : '' %>">
-				<strong>Header <%= i %>:</strong> 
+				<strong>Header <%= i %>:</strong>
 				<span><%= typo["font"] + ", " + typo["font-style"] + ", " + typo["font-size"] + ", " + typo["leading"] + ", " + typo["text-colour"]%></span>
 			</dt>
 			<dd id="result-header-h<%= i %>-dd" class="<%= typo['font']=='N/A' ? 'not-set' : '' %> <%= i==1?'first' : '' %>" style="font-family:<%=typo["font"]%>; font-style:<%=typo["font-style"]%>; font-size:<%=typo["font-size"]%>; line-height:<%=typo["line-height"]%>; color:<%=typo["color"]%>; background-color:<%=typo["background-color"] == '#ffffff' ? '#959595' : 'transparent'%>;">
@@ -87,11 +87,11 @@
 
 	<div id="homepage-img-section" class="page-break">
 	<h2 class="grid_16">Homepage</h2>
-	
+
 	<div id="homepage-img-holder" class="grid_16">
 		<img src="/<%=data["thumbPath"]%>" />
 	</div>
 	</div>
 
 </div>
-<% include footer.ejs %>
+<%- include('footer.ejs'); -%>
