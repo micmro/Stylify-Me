@@ -33,7 +33,17 @@ app.use(serveFavicon(path.join(__dirname + '/public/favicon.ico')));
 app.use(bodyParser.json());
 app.use(serveStatic(path.join(__dirname, 'public')));
 
+const defaultReferrers = [
+	"http://stylifyme.com",
+	"http://www.stylifyme.com",
+	"http://stylify.herokuapp.com",
+	"http://localhost:9185",
+	"http://localhost:7210"
+];
 
+const validReferrers = (process.env.VALID_REFERRERS || defaultReferrers.join(",")).split(",").map(i => i.trim());
+validReferrers.push(`http://localhost:${app.get('port')}`); // always accept from localhost
+app.set('validReferrers', validReferrers);
 
 if (app.get('env') === 'development') {
 	app.use(errorhandler({ dumpExceptions: true, showStack: true }));
@@ -68,23 +78,13 @@ const utils = {
 	},
 
 	isRefererValid: (referer) => {
-		const validRefs = ["http://stylifyme.com",
-						"http://www.stylifyme.com",
-						"http://stylify.herokuapp.com",
-						"http://localhost:9185",
-						"http://localhost:7210",
-						"http://localhost:" + app.get('port')];
-		let isvalid = false;
-		for (valRef in validRefs) {
-			if (referer.indexOf(validRefs[valRef]) == 0) {
-				isvalid = true;
-				return true;
-			}
+		if (app.get('validReferrers').some(i => i === "*" || i === referer)) {
+			return true
 		}
-		if (!isvalid) {
-			console.log("ERR:Invalid referer:", referer);
-		}
-		return isvalid;
+
+		console.log("ERR:Invalid referer:", referer);
+		
+		return false;
 	},
 
 	parsePhantomResponse: (err, stdout, stderr, onsuccess, onerror) => {
