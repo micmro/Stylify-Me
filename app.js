@@ -22,6 +22,25 @@ const config = {
 	, screenshotCacheTime: 5000 * 1 //in ms (1000ms = 1 sec)
 };
 
+const defaultReferrers = [
+	"http://stylifyme.com",
+	"http://www.stylifyme.com",
+	"http://stylify.herokuapp.com",
+	"http://localhost:9185",
+	"http://localhost:7210"
+];
+
+const referrers = () => {
+	const validReferrers = process.env.VALID_REFERRERS
+		? process.env.VALID_REFERRERS.split(",").map(i => i.trim())
+		: defaultReferrers;
+	
+	// always accept from localhost
+	validReferrers.push(`http://localhost:${app.get('port')}`);
+
+	return validReferrers
+};
+
 const app = express();
 
 app.set('port', process.env.PORT || 5000);
@@ -32,18 +51,7 @@ app.set('view engine', 'ejs');
 app.use(serveFavicon(path.join(__dirname + '/public/favicon.ico')));
 app.use(bodyParser.json());
 app.use(serveStatic(path.join(__dirname, 'public')));
-
-const defaultReferrers = [
-	"http://stylifyme.com",
-	"http://www.stylifyme.com",
-	"http://stylify.herokuapp.com",
-	"http://localhost:9185",
-	"http://localhost:7210"
-];
-
-const validReferrers = (process.env.VALID_REFERRERS || defaultReferrers.join(",")).split(",").map(i => i.trim());
-validReferrers.push(`http://localhost:${app.get('port')}`); // always accept from localhost
-app.set('validReferrers', validReferrers);
+app.set('validReferrers', referrers());
 
 if (app.get('env') === 'development') {
 	app.use(errorhandler({ dumpExceptions: true, showStack: true }));
