@@ -22,6 +22,26 @@ const config = {
 	, screenshotCacheTime: 5000 * 1 //in ms (1000ms = 1 sec)
 };
 
+const defaultReferers = [
+	"http://stylifyme.com",
+	"http://www.stylifyme.com",
+	"http://stylify.herokuapp.com",
+	"http://localhost:9185",
+	"http://localhost:7210",
+];
+
+/* Return the valid referers, either from an envvar or the defaults */
+const referers = () => {
+	const validReferers = process.env.VALID_REFERERS
+		? process.env.VALID_REFERERS.split(",").map(i => i.trim())
+		: defaultReferers;
+	
+	// always accept from localhost
+	validReferers.push(`http://localhost:${app.get('port')}`);
+
+	return validReferers;
+};
+
 const app = express();
 
 app.set('port', process.env.PORT || 5000);
@@ -32,8 +52,7 @@ app.set('view engine', 'ejs');
 app.use(serveFavicon(path.join(__dirname + '/public/favicon.ico')));
 app.use(bodyParser.json());
 app.use(serveStatic(path.join(__dirname, 'public')));
-
-
+app.set('validReferers', referers());
 
 if (app.get('env') === 'development') {
 	app.use(errorhandler({ dumpExceptions: true, showStack: true }));
@@ -68,23 +87,13 @@ const utils = {
 	},
 
 	isRefererValid: (referer) => {
-		const validRefs = ["http://stylifyme.com",
-						"http://www.stylifyme.com",
-						"http://stylify.herokuapp.com",
-						"http://localhost:9185",
-						"http://localhost:7210",
-						"http://localhost:" + app.get('port')];
-		let isvalid = false;
-		for (valRef in validRefs) {
-			if (referer.indexOf(validRefs[valRef]) == 0) {
-				isvalid = true;
-				return true;
-			}
+		if (app.get('validReferers').some(i => i === "*" || i === referer)) {
+			return true
 		}
-		if (!isvalid) {
-			console.log("ERR:Invalid referer:", referer);
-		}
-		return isvalid;
+
+		console.log("ERR:Invalid referer:", referer);
+		
+		return false;
 	},
 
 	parsePhantomResponse: (err, stdout, stderr, onsuccess, onerror) => {
