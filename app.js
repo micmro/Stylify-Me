@@ -12,7 +12,8 @@ const http = require('http')
 	, serveFavicon = require('serve-favicon')
 	, serveStatic = require('serve-static')
 	, compression = require('compression')
-	, phantomjs = require('phantomjs-prebuilt');
+	, phantomjs = require('phantomjs-prebuilt')
+	, logoScrape = require('logo-scrape');
 
 /* Variables / Config */
 const config = {
@@ -35,7 +36,7 @@ const referers = () => {
 	const validReferers = process.env.VALID_REFERERS
 		? process.env.VALID_REFERERS.split(",").map(i => i.trim())
 		: defaultReferers;
-	
+
 	// always accept from localhost
 	validReferers.push(`http://localhost:${app.get('port')}`);
 
@@ -92,7 +93,7 @@ const utils = {
 		}
 
 		console.log("ERR:Invalid referer:", referer);
-		
+
 		return false;
 	},
 
@@ -236,7 +237,9 @@ app.get('/query', (req, res) => {
 			try {
 				phantomProcess = childProcess.execFile(config.binPath, childArgs, { timeout: 25000 }, (err, stdout, stderr) => {
 					utils.parsePhantomResponse(err, stdout, stderr, (jsonResponse) => {
-						res.status(200).jsonp(jsonResponse);
+						logoScrape.LogoScrape.getLogos(req.query["url"]).then((logos) => {
+							res.status(200).jsonp(Object.assign({}, jsonResponse, { logos: logos }))
+						}).catch((err) => res.status(200).jsonp(Object.assign({}, jsonResponse, {})));;
 					}, (errorMsg, errorCode) => {
 						phantomProcess.kill();
 						res.status(200).jsonp({ "error": errorMsg, "errorCode": errorCode || "000" });
