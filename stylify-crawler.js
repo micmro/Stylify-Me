@@ -1,52 +1,11 @@
 "use strict";
-var	page = require('webpage').create(),
-	args = require('system').args,
-	address, isDebug, saveImage;
+var	args = require('system').args,
+	page, isDebug, saveImage;
+
+var address = args[1];
 
 /*phantom settings*/
 phantom.cookiesEnabled = true;
-/*request and render settings*/
-page.zoomFactor = 1;
-page.viewportSize = { width: 1024, height: 768 };
-var config = {
-	tempImgPath : "public/temp-img/",
-	jQueryPath : "lib/jquery-2.1.1.min.js",
-	//pretend to be Safari 9 - (similar engine as PhantomJS) change this if you want to pretend to be another browser
-	userAgent : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/601.1.56 (KHTML, like Gecko) Version/9.0 Safari/537.86.1"
-};
-
-page.settings.userAgent = config.userAgent;
-
-//print out console logs on page level
-page.onConsoleMessage = function (msg) {
-	if (msg.indexOf("Unsafe JavaScript attempt to access frame with URL") > -1){
-		return;
-	}
-	if(isDebug){
-		console.log('CONSOLE: ' + msg);
-	}
-};
-
-page.onAlert = function (msg) {
-	//ignore alerts
-	//console.log('ALERT: ' + msg);
-};
-
-//error tracing
-page.onError = function(msg, trace) {
-    var msgStack = ['ERROR: ' + msg];
-    if (trace) {
-        msgStack.push('TRACE:');
-        trace.forEach(function(t) {
-            msgStack.push(' -> ' + (t.file||t.sourceURL) + ': ' + t.line + (t.function ? ' (in function ' + t.function + ')' : ''));
-        });
-    }
-    if(isDebug){
-    	console.error(msgStack.join('\n'));
-	}
-	//phantom.exit();
-	return;
-};
 
 phantom.onError = function(msg, trace) {
     var msgStack = ['PHANTOM ERROR: ' + msg];
@@ -71,6 +30,14 @@ var utils = {
 			return true;
 		}else{
 			return false;
+		}
+	},
+	log : function(msg) {
+		if (msg.indexOf("Unsafe JavaScript attempt to access frame with URL") > -1){
+			return;
+		}
+		if(isDebug){
+			console.log('CONSOLE: ' + msg);
 		}
 	}
 };
@@ -242,51 +209,103 @@ function parsePage (page, address){
 	});
 };
 
+function crawl() {
+	try{
+		page = require('webpage').create()
 
-try{
-	//main
-	if (args.length === 0) {
-	    console.log('Usage: color-crawler.js <some URL>');
-	    phantom.exit();
-	}else{
-		address = args[1];
-		saveImage = args[2] !== "false";
-		isDebug = args[3] === "true";
-		if(utils.isValidURL(address)){
-			page.open(address, function (status) {
-			    if (status == 'success'){
-		        	//delay analizing a bit
-		        	window.setTimeout(function () {
-			        	if(page.injectJs(config.jQueryPath)){
-				    		var result = parsePage(page, address)
-				    			,imgPath = config.tempImgPath + utils.makeFilename(address) + "_" + new Date().getTime().toString() + Math.floor(Math.random()*10000) + '.png';
-				    		if(!result){
-				    			console.log("ERROR(502)"); //could not parse site
-								phantom.exit();
-				    		}
-				    		if(saveImage){
-								result.thumbPath =  imgPath.replace("public/", "");
-								page.render(imgPath);
-							}
-							//return result and save screen
-							console.log(JSON.stringify(result));
-				    		phantom.exit();
-						}else{
-							console.log("ERROR: COULD NOT LOAD JQUERY");
-							phantom.exit();
-						}
-					}, 200);
-				}else{
-		            console.log('ERROR(404)'); //Fail to load the current url
-		            phantom.exit();
+		/*request and render settings*/
+		page.zoomFactor = 1;
+		page.viewportSize = { width: 1024, height: 768 };
+		var config = {
+			tempImgPath : "public/temp-img/",
+			jQueryPath : "lib/jquery-2.1.1.min.js",
+			//pretend to be Safari 9 - (similar engine as PhantomJS) change this if you want to pretend to be another browser
+			userAgent : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/601.1.56 (KHTML, like Gecko) Version/9.0 Safari/537.86.1"
+		};
+
+		page.settings.userAgent = config.userAgent;
+
+		//print out console logs on page level
+		page.onConsoleMessage = function (msg) {
+			utils.log(msg)
+		};
+
+		page.onAlert = function (msg) {
+			//ignore alerts
+			//console.log('ALERT: ' + msg);
+		};
+
+		//error tracing
+		page.onError = function(msg, trace) {
+				var msgStack = ['ERROR: ' + msg];
+				if (trace) {
+						msgStack.push('TRACE:');
+						trace.forEach(function(t) {
+								msgStack.push(' -> ' + (t.file||t.sourceURL) + ': ' + t.line + (t.function ? ' (in function ' + t.function + ')' : ''));
+						});
 				}
-			});
-		} else {
-			console.error("ERROR(400)"); //invalid url
-			phantom.exit();
+				if(isDebug){
+					console.error(msgStack.join('\n'));
+			}
+			//phantom.exit();
+			return;
+		};
+
+		page.onNavigationRequested = function (url, type, willNavigate, main) {
+			url = url.replace(/#.+/, "")
+
+			if (main && url != address) {
+				address = url;
+				page.close();
+				setTimeout(crawl, 100); //Note the setTimeout here
+			}
+		};
+
+		//main
+		if (args.length === 0) {
+				console.log('Usage: color-crawler.js <some URL>');
+				phantom.exit();
+		}else{
+			saveImage = args[2] !== "false";
+			isDebug = args[3] === "true";
+			if(utils.isValidURL(address)){
+				page.open(address, function (status) {
+						if (status == 'success'){
+								//delay analizing a bit
+								window.setTimeout(function () {
+									if(page.injectJs(config.jQueryPath)){
+									var result = parsePage(page, address)
+										,imgPath = config.tempImgPath + utils.makeFilename(address) + "_" + new Date().getTime().toString() + Math.floor(Math.random()*10000) + '.png';
+									if(!result){
+										console.log("ERROR(502)"); //could not parse site
+									phantom.exit();
+									}
+									if(saveImage){
+									result.thumbPath =  imgPath.replace("public/", "");
+									page.render(imgPath);
+								}
+								//return result and save screen
+								console.log(JSON.stringify(result));
+									phantom.exit();
+							}else{
+								console.log("ERROR: COULD NOT LOAD JQUERY");
+								phantom.exit();
+							}
+						}, 200);
+					}else{
+									console.log('ERROR(404)'); //Fail to load the current url
+									phantom.exit();
+					}
+				});
+			} else {
+				console.error("ERROR(400)"); //invalid url
+				phantom.exit();
+			}
 		}
+	}catch(e){
+		console.error("ERROR: " + e);
+		phantom.exit();
 	}
-}catch(e){
-	console.error("ERROR: " + e);
-	phantom.exit();
 }
+
+crawl()
