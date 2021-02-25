@@ -239,7 +239,7 @@ app.get('/query', (req, res) => {
 					utils.parsePhantomResponse(err, stdout, stderr, (jsonResponse) => {
 						logoScrape.LogoScrape.getLogos(req.query["url"]).then((logos) => {
 							res.status(200).jsonp(Object.assign({}, jsonResponse, { logos: logos }))
-						}).catch((err) => res.status(200).jsonp(Object.assign({}, jsonResponse, {})));;
+						}).catch((err) => res.status(200).jsonp(Object.assign({}, jsonResponse, { logo_error: err })));;
 					}, (errorMsg, errorCode) => {
 						phantomProcess.kill();
 						res.status(200).jsonp({ "error": errorMsg, "errorCode": errorCode || "000" });
