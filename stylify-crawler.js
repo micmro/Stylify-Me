@@ -143,6 +143,9 @@ function parsePage (page, address){
 			});
 		}
 
+    buttonColors = {}
+    linkColors = {}
+
 		//iterate through every element
 		$jq('*').each(function(i,el) {
 			colour = null;
@@ -154,6 +157,29 @@ function parsePage (page, address){
 				}
 				//create RGBColor object
 				colour = rgb2hex(el.css(prop));
+
+        nodename = el.prop("nodeName")
+
+        if (nodename === "A") {
+          if (linkColors[colour]) {
+            linkColors[colour][prop] = (linkColors[colour][prop] || 0) + 1;
+            linkColors[colour].count = linkColors[colour].count + 1;
+          } else if (hexRegEx.test(colour)) {
+            linkColors[colour] = { count: 1 };
+            linkColors[colour][prop] = 1;
+          }
+        }
+
+
+        if (nodename === "BUTTON") {
+          if (buttonColors[colour]) {
+            buttonColors[colour][prop] = (buttonColors[colour][prop] || 0) + 1;
+            buttonColors[colour].count = buttonColors[colour].count + 1;
+          } else if (hexRegEx.test(colour)) {
+            buttonColors[colour] = { count: 1 };
+            buttonColors[colour][prop] = 1;
+          }
+        }
 
 				if(colourAttributes[colour]){
 					colourAttributes[colour][prop] = (colourAttributes[colour][prop]||0) + 1;
@@ -188,6 +214,8 @@ function parsePage (page, address){
 			//, "colourOccurences" : colourOccurences
 			, "coloursText" : coloursTextReturn
 			, "coloursBg" : coloursBgReturn
+      , "linkColors" : linkColors
+      , "buttonColors" : buttonColors
 			, "typography" : {
 				"h1" : getTypeSet(h1, "Header 1")
 				,"h2" : getTypeSet(h2, "Header 2")
