@@ -223,7 +223,7 @@ app.get('/query', (req, res) => {
 	if (utils.isRefererValid(referer)) {
 		url = req.query["url"];
 		if (url && utils.isValidURL(url)) {
-			childArgs = [config.crawlerFilePath, req.query["url"], showImage, debugMode];
+			childArgs = ["--ignore-ssl-errors=true", config.crawlerFilePath, req.query["url"], showImage, debugMode];
 			try {
 				phantomProcess = childProcess.execFile(config.binPath, childArgs, { timeout: 25000 }, (err, stdout, stderr) => {
 					utils.parsePhantomResponse(err, stdout, stderr, (jsonResponse) => {
