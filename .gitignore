@@ -3,3 +3,5 @@ vendor/
 node_modules
 *.sublime-project
 *.sublime-workspace
+.DS_STORE
+.vscode
