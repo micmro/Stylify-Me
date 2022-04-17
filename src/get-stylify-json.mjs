@@ -8,10 +8,8 @@ import { parsePhantomResponse } from "./utils.mjs";
  * @type {import("express").RequestHandler<undefined, any, any, {url?: string}>}
  */
 export const getStylifyJsonHandler = (req, res) => {
-  const referer = req.get("Referer") || "http://stylify.herokuapp.com",
-    showImage = true,
-    debugMode = false;
-
+  const showImage = true;
+  const debugMode = false;
   const url = req.query.url;
 
   let phantomProcess;

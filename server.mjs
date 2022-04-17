@@ -66,5 +66,8 @@ app.get("/query", validateReferer, validateUrlParam, getStylifyJsonHandler);
 app.get("/version", getVersionHandler);
 
 http.createServer(app).listen(app.get("port"), () => {
-  console.log("Express server listening on port " + app.get("port"));
+  console.log(
+    `http://localhost:${app.get("port")}/query?url=http://stylifyme.com`
+  );
+  console.log(`Express server listening on port ${app.get("port")}`);
 });

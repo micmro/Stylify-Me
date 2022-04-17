@@ -14,13 +14,13 @@
     "express": "^4.17.3",
     "morgan": "^1.10.0",
     "phantomjs-prebuilt": "^2.1.16",
-    "puppeteer": "^13.4.0",
+    "puppeteer": "^13.5.2",
     "serve-favicon": "^2.5.0",
     "serve-static": "^1.15.0"
   },
   "engines": {
-    "node": ">12.x.x",
-    "npm": ">6.x.x"
+    "node": ">=16.x.x",
+    "npm": ">=8.x.x"
   },
   "devDependencies": {
     "typescript": "^4.6.3"

@@ -1,12 +1,18 @@
 // @ts-check
+import { URL } from "url";
 
 /**
  *
  * @param {string} urlPath
  * @returns
  */
-export const isValidURL = (urlPath) => {
-  const maybeUrl = new URL(urlPath);
+const isValidURL = (urlPath) => {
+  let maybeUrl;
+  try {
+    maybeUrl = new URL(urlPath);
+  } catch {
+    return false;
+  }
   if (!maybeUrl.hostname || !/http[s]?:/.test(maybeUrl.protocol)) {
     return false;
   }
@@ -19,7 +25,7 @@ export const isValidURL = (urlPath) => {
  */
 export const validateUrlParam = (req, res, next) => {
   const url = req.query.url;
-  if (url || isValidURL(url)) {
+  if (url && isValidURL(url)) {
     return next();
   }
   console.log("ERR:Invalid or missing url parameter", url);
