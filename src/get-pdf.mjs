@@ -1,57 +1,85 @@
 // @ts-check
-import childProcess from "child_process";
-import { config } from "./config.mjs";
+import puppeteer from "puppeteer";
+import { parsingConfig } from "./config.mjs";
+import { errorCodes } from "./errors.mjs";
+import { newPageWithUserAgent, queryPage } from "./query-page.mjs";
 import { deleteFile, makeFilename } from "./utils.mjs";
 
 /**
- * returns stylify json
- * @type {import("express").RequestHandler<undefined, any, any, {url?: string}>}
+ * build URL to query for PDF view
+ * @param {import("express").Request<undefined, any, any, {url: string}>} req
  */
-export const getPdfHandler = (req, res) => {
-  let phantomProcess;
+const getRenderPdfViewUrl = (req) => {
+  const {
+    protocol,
+    query: { url },
+  } = req;
+  return `${protocol}://${req.get(
+    "host"
+  )}/renderpdfview?url=${encodeURIComponent(url)}`;
+};
 
+/**
+ * returns stylify json
+ * @type {import("express").RequestHandler<undefined, any, any, {url: string}>}
+ */
+export const getPdfHandler = async (req, res) => {
+  /** @type {puppeteer.Browser} */
+  let browser;
   const url = req.query.url;
+  /** @type{{ code: string; msg: string; }} */
+  let error = undefined;
+  const cleanup = async () => {
+    console.log(">>>> getPdfHandler: running cleanup");
+    if (browser) {
+      await browser.close();
+    }
+  };
 
-  const filename =
-    "public/pdf/temp" +
-    makeFilename(url) +
-    "_" +
-    new Date().getTime().toString() +
-    ".pdf";
-  const childArgs = [
-    config.rasterizeFilePath,
-    req.protocol +
-      "://" +
-      req.get("host") +
-      "/renderpdfview?url=" +
-      encodeURIComponent(url),
-    filename,
-    "A4",
-  ];
   try {
-    phantomProcess = childProcess.execFile(
-      config.binPath,
-      childArgs,
-      { timeout: 50000 },
-      (err, stdout, stderr) => {
-        console.log("LOG: CREATED PDF", filename);
-        res.download(
-          filename,
-          "stylify-me " + makeFilename(url) + ".pdf",
-          (err) => {
-            deleteFile(filename);
-            phantomProcess.kill();
-          }
-        );
-      }
-    );
-  } catch (err) {
-    phantomProcess.kill();
-    console.log("ERR:Could not create get pdf child process", url);
-    res.status(200).jsonp({
-      error:
-        "Sorry, our server experiences a high load and the service is currently unavailable",
-      errorCode: "503",
+    const filename = `public/pdf/temp${makeFilename(url)}_${Date.now()}.pdf`;
+    browser = await puppeteer.launch(parsingConfig.chromeOptions);
+    const page = await newPageWithUserAgent(browser);
+    await page.goto(getRenderPdfViewUrl(req)).catch((err) => {
+      console.log(err);
+      error = errorCodes["503-pdf"];
     });
+
+    if (error) {
+      await cleanup();
+      res.header(error.code).json(error);
+      return;
+    }
+
+    // wait for all images to load before rendering PDF
+    await Promise.all([
+      page.waitForSelector("#image-holder-1 img", { timeout: 5000 }),
+      page.waitForSelector("#image-holder-2 img", { timeout: 5000 }),
+      page.waitForSelector("#image-holder-3 img", { timeout: 5000 }),
+      page.waitForSelector("#homepage-img-holder img", { timeout: 5000 }),
+    ]).catch((err) => {
+      // TODO: remove this later
+      console.log("error waiting for images", err);
+    });
+
+    await page
+      .pdf({
+        path: filename,
+        printBackground: true,
+        format: "a4",
+        timeout: 30000,
+        margin: { top: "0.5cm", right: "1cm", bottom: "0.5cm", left: "1cm" },
+      })
+      .finally(async () => {
+        await cleanup();
+      });
+
+    res.download(filename, `stylify-me ${makeFilename(url)}.pdf`, () => {
+      deleteFile(filename); // delete file after download
+    });
+  } catch (err) {
+    cleanup();
+    console.log("ERR:Error rendering PDF", url, err);
+    res.header(errorCodes["503-pdf"].code).json(errorCodes["503-pdf"]);
   }
 };

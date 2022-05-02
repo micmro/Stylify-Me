@@ -1,57 +1,44 @@
 // @ts-check
-import childProcess from "child_process";
-import { config } from "./config.mjs";
-import { parsePhantomResponse } from "./utils.mjs";
+import puppeteer from "puppeteer";
+import { parsingConfig } from "./config.mjs";
+import { errorCodes } from "./errors.mjs";
+import { queryPage, runPageParsing } from "./query-page.mjs";
 
 /**
  * renders html for PDF
  * @type {import("express").RequestHandler<undefined, any, any, {url?: string}>}
  */
-export const getRenderPdfViewHandler = (req, res) => {
-  const showImage = true,
-    debugMode = false;
+export const getRenderPdfViewHandler = async ({ query: { url } }, res) => {
+  /** @type {puppeteer.Browser} */
+  let browser;
+  const cleanup = async () => {
+    if (browser) {
+      await browser.close();
+    }
+  };
 
-  const url = req.query.url;
-
-  let phantomProcess;
-  const childArgs = [
-    config.crawlerFilePath,
-    url,
-    "--local-url-access=false",
-    "--ignore-ssl-errors=true",
-    "--ssl-protocol=any",
-    `--load-images=${showImage}`,
-    `--debug=${debugMode}`,
-  ];
   try {
-    phantomProcess = childProcess.execFile(
-      config.binPath,
-      childArgs,
-      { timeout: 25000 },
-      (err, stdout, stderr) => {
-        parsePhantomResponse(
-          err,
-          stdout,
-          stderr,
-          (jsonResponse) => {
-            res.render("pdfbase", {
-              title: "Stylify Me - Extract",
-              pageUrl: url,
-              data: jsonResponse,
-            });
-          },
-          (errorMsg, errorCode) => {
-            phantomProcess.kill();
-            res
-              .status(503)
-              .jsonp({ error: errorMsg, errorCode: errorCode || "000" });
-          }
-        );
-      }
-    );
-  } catch (err) {
-    phantomProcess.kill();
-    console.log("ERR:Could not create render pdf child process", url);
-    res.status(503).jsonp({ error: "Eror creating pdf" });
+    browser = await puppeteer.launch(parsingConfig.chromeOptions);
+
+    const { page, error } = await queryPage(url, browser);
+    if (error) {
+      await cleanup();
+      res.jsonp(error);
+      return;
+    }
+
+    const parseResult = await runPageParsing(page).finally(async () => {
+      await cleanup();
+    });
+
+    res.render("pdfbase", {
+      title: "Stylify Me - Extract",
+      pageUrl: url,
+      data: parseResult,
+    });
+  } catch {
+    cleanup();
+    console.log("ERR:Error rendering PDF view", url);
+    res.status(200).end(errorCodes["503-pdf-view"]);
   }
 };

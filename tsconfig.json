@@ -7,5 +7,5 @@
     "allowJs": true,
     "noEmit": true
   },
-  "include": ["./server.mjs", "src/**/*"]
+  "include": ["app.mjs", "src/**/*"]
 }

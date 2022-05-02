@@ -1,11 +1,10 @@
 {
   "name": "stylify-me",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node app.js",
-    "startV2": "node server.mjs",
+    "start": "node app.mjs",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
@@ -25,6 +24,7 @@
     "npm": ">=8.x.x"
   },
   "devDependencies": {
+    "@types/express": "^4.17.13",
     "jest": "^27.5.1",
     "prettier": "^2.6.2",
     "typescript": "^4.6.3"

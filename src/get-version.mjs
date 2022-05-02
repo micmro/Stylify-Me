@@ -1,27 +1,18 @@
 // @ts-check
 
-import childProcess from "child_process";
-import { config } from "./config.mjs";
+import puppeteer from "puppeteer";
+import { parsingConfig } from "./config.mjs";
 
 /**
- * returns phantom js version number
+ * returns browser version number
  * @type {import("express").RequestHandler}
  */
-export const getVersionHandler = (req, res) => {
-  const childArgs = ["--version"];
-  let phantomProcess;
+export const getVersionHandler = async (req, res) => {
   try {
-    phantomProcess = childProcess.execFile(
-      config.binPath,
-      childArgs,
-      { timeout: 5000 },
-      (err, stdout, stderr) => {
-        res
-          .status(200)
-          .jsonp((err || stdout || stderr).toString().replace(/[\n\r]+/g, ""));
-      }
-    );
-  } catch (err) {
-    phantomProcess.kill();
+    const browser = await puppeteer.launch(parsingConfig.chromeOptions);
+    const version = await browser.version();
+    res.status(200).jsonp(version);
+  } catch {
+    res.status(500);
   }
 };

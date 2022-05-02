@@ -3,16 +3,32 @@ import phantomjs from "phantomjs-prebuilt";
 
 /* Variables / Config */
 export const config = {
+  tempImgPath: "public/temp-img/",
   binPath: phantomjs.path,
   crawlerFilePath: "stylify-crawler.js",
   rasterizeFilePath: "phantom-rasterize.js",
   screenshotCacheTime: 5000 * 1, //in ms (1000ms = 1 sec)
 };
 
+/**
+ * @type {import("puppeteer").LaunchOptions & import("puppeteer").LaunchOptions & import("puppeteer").BrowserLaunchArgumentOptions & import("puppeteer").BrowserConnectOptions}
+ */
+const chromeOptions = {
+  headless: true,
+  defaultViewport: {
+    width: 1280,
+    height: 1024,
+    deviceScaleFactor: 1,
+  },
+  args: [
+    "--incognito",
+    "--no-sandbox",
+    "--single-process",
+    "--no-zygote",
+    "--enable-automation",
+  ],
+};
+
 export const parsingConfig = {
-  // tempImgPath: "public/temp-img/",
-  jQueryPath: "lib/jquery-2.1.1.min.js",
-  //pretend to be Safari 9 - (similar engine as PhantomJS) change this if you want to pretend to be another browser
-  userAgent:
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/601.1.56 (KHTML, like Gecko) Version/9.0 Safari/537.86.1",
+  chromeOptions,
 };
