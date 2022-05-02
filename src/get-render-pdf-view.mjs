@@ -36,9 +36,10 @@ export const getRenderPdfViewHandler = async ({ query: { url } }, res) => {
       pageUrl: url,
       data: parseResult,
     });
-  } catch {
+  } catch (err) {
     cleanup();
-    console.log("ERR:Error rendering PDF view", url);
-    res.status(200).end(errorCodes["503-pdf-view"]);
+    console.log("ERR:Error rendering PDF view", url, err);
+    const { msg } = errorCodes["503-pdf-view"];
+    res.status(503).end(msg);
   }
 };

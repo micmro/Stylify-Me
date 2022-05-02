@@ -12,7 +12,7 @@ export const getVersionHandler = async (req, res) => {
     const browser = await puppeteer.launch(parsingConfig.chromeOptions);
     const version = await browser.version();
     res.status(200).jsonp(version);
-  } catch {
+  } catch (err) {
     res.status(500);
   }
 };
