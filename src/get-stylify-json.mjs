@@ -35,7 +35,7 @@ export const getStylifyJsonHandler = async ({ query: { url } }, res) => {
     res.jsonp(parseResult);
   } catch (err) {
     cleanup();
-    console.log("ERR:Error getting Stylify JSON", url);
+    console.log("ERR:Error getting Stylify JSON", url, err);
     res.status(200).jsonp(errorCodes["503"]);
   }
 };
