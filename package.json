@@ -19,8 +19,8 @@
     "serve-static": "^1.15.0"
   },
   "engines": {
-    "node": ">=16.x.x",
-    "npm": ">=8.x.x"
+    "node": "16.x.x",
+    "npm": "8.x.x"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
