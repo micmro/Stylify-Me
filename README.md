@@ -10,22 +10,7 @@ We host our app on [Heroku](http://heroku.com).
 
 1. Make sure you have [NodeJS](http://nodejs.org/) installed and running
 2. Install dependencies with npm `npm install`
-3. Update the referer url check in `src/validateRefererMiddleware.mjs` with the url of your frontend (local and production):
-
-   ```javaScript
-   const isRefererValid = (referer, currentPort) => {
-   const validRefs = [
-   	"http://stylifyme.com",
-   	"http://www.stylifyme.com",
-   	"http://stylify.herokuapp.com",
-   	"http://localhost:9185",
-   	"http://localhost:7210",
-   	`http://localhost:${currentPort}`,
-   ];
-   	...
-   	}
-   ```
-
+3. Update the referrer urls in [`/src/config.mjs`](https://github.com/micmro/Stylify-Me/blob/master/src/config.mjs#L8-L14) with the urls of your frontend (local and production):
 4. Start the nodeJs app with `npm run start` (or `node app.mjs`)
 5. Query _http://localhost:5000/query?url=https%3A%2F%2Fgoogle.com_ (assuming you run your app on port `5000`) and you should be able to see a JSON response
    I recommend using [Postman](http://www.getpostman.com) for debugging your api

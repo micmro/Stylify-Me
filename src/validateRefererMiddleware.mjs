@@ -1,19 +1,14 @@
 // @ts-check
 
+import { config } from "./config.mjs";
+
 /**
  * @param {string} referer
  * @param {string} currentPort
  * @returns
  */
 const isRefererValid = (referer, currentPort) => {
-  const validRefs = [
-    "http://stylifyme.com",
-    "http://www.stylifyme.com",
-    "http://stylify.herokuapp.com",
-    "http://localhost:9185",
-    "http://localhost:7210",
-    `http://localhost:${currentPort}`,
-  ];
+  const validRefs = [...config.validRefs, `http://localhost:${currentPort}`];
   let isvalid = false;
   for (const valRef in validRefs) {
     if (referer.indexOf(validRefs[valRef]) == 0) {

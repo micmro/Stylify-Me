@@ -1,13 +1,17 @@
 // @ts-check
-import phantomjs from "phantomjs-prebuilt";
 
 /* Variables / Config */
 export const config = {
   tempImgPath: "public/temp-img/",
-  binPath: phantomjs.path,
   crawlerFilePath: "stylify-crawler.js",
-  rasterizeFilePath: "phantom-rasterize.js",
   screenshotCacheTime: 5000, //in ms (1000ms = 1 sec)
+  validRefs: [
+    "http://stylifyme.com",
+    "http://www.stylifyme.com",
+    "http://stylify.herokuapp.com",
+    "http://localhost:9185",
+    "http://localhost:7210",
+  ],
 };
 
 /**
