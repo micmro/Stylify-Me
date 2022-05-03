@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "module": "ES2020",
+    "target": "es6",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "noEmit": true
+  },
+  "include": ["app.mjs", "src/**/*"]
+}
