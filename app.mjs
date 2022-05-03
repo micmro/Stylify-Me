@@ -62,7 +62,7 @@ app.get("/getpdf", validateReferer, validateUrlParam, getPdfHandler);
 // returns stylify json
 app.get("/query", validateReferer, validateUrlParam, getStylifyJsonHandler);
 
-// returns phantom js version number
+// returns browser version number
 app.get("/version", getVersionHandler);
 
 http.createServer(app).listen(app.get("port"), () => {
