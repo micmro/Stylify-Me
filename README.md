@@ -4,7 +4,15 @@ A Style Guide Generator - using [NodeJS](http://nodejs.org/) and [Puppeteer](htt
 See it live at http://stylifyme.com
 
 This repo only contains the web service.
-We host our app on [Heroku](http://heroku.com).
+
+## Deployment
+
+We host our app on [Heroku](http://heroku.com), using the 2 buildpacks below:
+
+```
+heroku buildpacks:add heroku/google-chrome
+heroku buildpacks:add heroku/nodejs
+```
 
 ## Running the service locally
 
