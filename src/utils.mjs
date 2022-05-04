@@ -21,5 +21,5 @@ export const deleteFile = (filePath) => {
  * @returns
  */
 export const makeFilename = (url) => {
-  return url.replace(/https?:\/\//, "").replace(/[\/:/]/g, "_");
+  return url.replace(/https?:\/\//, "").replace(/[\W]/g, "_");
 };
