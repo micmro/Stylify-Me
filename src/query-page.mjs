@@ -108,13 +108,13 @@ export const runPageParsing = async (page) => {
     takeScreenShot(page),
   ])
     .then(([parseResult, screenshotPath]) => {
-      const thumbPath =
+      const screenshot =
         typeof screenshotPath === "string"
           ? screenshotPath.replace("public/", "")
           : undefined;
       return {
         ...parseResult,
-        thumbPath,
+        screenshot,
       };
     })
     .catch(() => errorCodes["500"]);

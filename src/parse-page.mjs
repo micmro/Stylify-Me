@@ -194,13 +194,12 @@ export const parsePage = () => {
   return {
     title: document.title,
     colors: {
-      histogram: colourOccurences,
       text_histogram: coloursTextReturn,
       background_histogram: coloursBgReturn,
       text: rgb2hex(getStyle(p, "color") || naMsg),
       link: rgb2hex(getStyle(a, "color") || naMsg),
-      "main-background": rgb2hex(getStyle(baseSelector, "backgroundColor") || naMsg),
-      "body-background": rgb2hex(getStyle(body, "backgroundColor") || naMsg),
+      main_background: rgb2hex(getStyle(baseSelector, "backgroundColor") || naMsg),
+      body_background: rgb2hex(getStyle(body, "backgroundColor") || naMsg),
     },
     typographies: {
       h1: getTypeSet(h1, "Header 1"),
@@ -211,7 +210,9 @@ export const parsePage = () => {
       h6: getTypeSet(h6, "Header 6"),
       body: getTypeSet(baseSelector, "Body"),
     },
-    "background-img": getStyle(body, "backgroundImage") || naMsg,
-    "img-paths": imgPaths || naMsg,
+    images: {
+      background: getStyle(body, "backgroundImage") || naMsg,
+      paths: imgPaths || naMsg,
+    } 
   };
 };
