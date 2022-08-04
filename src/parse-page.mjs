@@ -193,10 +193,16 @@ export const parsePage = () => {
   //return result object
   return {
     title: document.title,
-    //, "colourOccurences" : colourOccurences
-    coloursText: coloursTextReturn,
-    coloursBg: coloursBgReturn,
-    typography: {
+    colors: {
+      histogram: colourOccurences,
+      text_histogram: coloursTextReturn,
+      background_histogram: coloursBgReturn,
+      text: rgb2hex(getStyle(p, "color") || naMsg),
+      link: rgb2hex(getStyle(a, "color") || naMsg),
+      "main-background": rgb2hex(getStyle(baseSelector, "backgroundColor") || naMsg),
+      "body-background": rgb2hex(getStyle(body, "backgroundColor") || naMsg),
+    },
+    typographies: {
       h1: getTypeSet(h1, "Header 1"),
       h2: getTypeSet(h2, "Header 2"),
       h3: getTypeSet(h3, "Header 3"),
@@ -205,14 +211,7 @@ export const parsePage = () => {
       h6: getTypeSet(h6, "Header 6"),
       body: getTypeSet(baseSelector, "Body"),
     },
-
-    "p-text-colour": rgb2hex(getStyle(p, "color") || naMsg),
-    "a-text-colour": rgb2hex(getStyle(a, "color") || naMsg),
-    "main-background-colour": rgb2hex(
-      getStyle(baseSelector, "backgroundColor") || naMsg
-    ),
     "background-img": getStyle(body, "backgroundImage") || naMsg,
-    "background-colour": rgb2hex(getStyle(body, "backgroundColor") || naMsg),
     "img-paths": imgPaths || naMsg,
   };
 };

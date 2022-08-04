@@ -19,12 +19,4 @@ export const errorCodes = {
     code: "503",
     msg: "Sorry, our server experiences a high load and the service is currently unavailable",
   },
-  "503-pdf": {
-    code: "503",
-    msg: "Error creating pdf",
-  },
-  "503-pdf-view": {
-    code: "503",
-    msg: "Error creating pdf view",
-  },
 };

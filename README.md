@@ -1,9 +1,6 @@
 # Stylify Me
 
 A Style Guide Generator - using [NodeJS](http://nodejs.org/) and [Puppeteer](https://pptr.dev/), an API to control Chrome.
-See it live at http://stylifyme.com
-
-This repo only contains the web service.
 
 ## Deployment
 
@@ -23,25 +20,3 @@ heroku buildpacks:add heroku/nodejs
 5. Query [`http://localhost:5000/query?url=https%3A%2F%2Fgoogle.com`](http://localhost:5000/query?url=https%3A%2F%2Fgoogle.com) (assuming you run your app on port `5000`) and you should be able to see a JSON response
    _I recommend using [Postman](http://www.getpostman.com) for debugging your api_
 
-### Frontend
-
-This repo only contains the web service, you can query it from the front end like this:
-
-```javaScript
-var urlToQuery = encodeURIComponent("http://google.com");
-
-$.ajax({
-	dataType: "jsonp",
-	url: "http://youreServiceUrl.com/query?url="+ urlToQuery,
-	success: function(data){
-		if(data["error"]){
-			alert("Error: " + data["error"]);
-			return;
-		}
-		//PROCESS the result
-	},
-	timeout : 10000
-}).fail(function(){
-	alert("Could not query site, the service might be down, please try again later.");
-});
-```

@@ -2,8 +2,7 @@
 
 /* Variables / Config */
 export const config = {
-  tempImgPath: "public/temp-img/",
-  crawlerFilePath: "stylify-crawler.js",
+  tempImgPath: "public/screenshots/",
   screenshotCacheTime: 5000, //in ms (1000ms = 1 sec)
   validRefs: [
     "http://stylifyme.com",

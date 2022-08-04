@@ -1,7 +1,6 @@
 // @ts-check
 import puppeteer from "puppeteer";
 import { parsingConfig } from "./config.mjs";
-import { errorCodes } from "./errors.mjs";
 import { queryPage, runPageParsing } from "./query-page.mjs";
 
 /**
@@ -36,6 +35,6 @@ export const getStylifyJsonHandler = async ({ query: { url } }, res) => {
   } catch (err) {
     cleanup();
     console.log("ERR:Error getting Stylify JSON", url, err);
-    res.status(200).jsonp(errorCodes["503"]);
+    res.status(503)
   }
 };

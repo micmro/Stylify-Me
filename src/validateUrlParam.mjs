@@ -28,8 +28,7 @@ export const validateUrlParam = (req, res, next) => {
   if (url && isValidURL(url)) {
     return next();
   }
-  console.log("ERR:Invalid or missing url parameter", url);
   res
-    .status(200)
-    .jsonp({ error: 'Invalid or missing "url" parameter', errorCode: "500" });
+    .status(422)
+    .jsonp({ error: 'Invalid or missing "url" parameter' });
 };
