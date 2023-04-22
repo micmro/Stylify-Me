@@ -8,7 +8,7 @@ export const config = {
   validRefs: [
     "http://stylifyme.com",
     "http://www.stylifyme.com",
-    "http://stylify.herokuapp.com",
+    "http://api.stylifyme.com",
     "http://localhost:9185",
     "http://localhost:7210",
   ],

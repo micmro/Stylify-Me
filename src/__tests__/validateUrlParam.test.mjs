@@ -14,7 +14,7 @@ describe("validateUrlParam", () => {
   test.each([
     ["http://stylifyme.com"],
     ["http://www.stylifyme.com"],
-    ["http://stylify.herokuapp.com"],
+    ["http://api.stylifyme.com"],
     ["https://google.com"],
     [`http://localhost:4000`],
   ])("accepts %s", (url) => {

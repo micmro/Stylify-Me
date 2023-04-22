@@ -9,7 +9,7 @@ describe("utils", () => {
   test.each([
     ["http://stylifyme.com", "stylifyme.com"],
     ["http://www.stylifyme.com", "www.stylifyme.com"],
-    ["http://stylify.herokuapp.com", "stylify.herokuapp.com"],
+    ["http://api.stylifyme.com", "api.stylifyme.com"],
     ["https://google.com", "google.com"],
     [`http://localhost:4000`, `localhost_4000`],
   ])("accepts %s", (url, result) => {

@@ -27,7 +27,7 @@ const isRefererValid = (referer, currentPort) => {
  * @type {import("express").RequestHandler<undefined, any, any, {url?: string}>}
  */
 export const validateReferer = (req, res, next) => {
-  const referer = req.get("Referer") || "http://stylify.herokuapp.com";
+  const referer = req.get("Referer") || "http://api.stylifyme.com";
   if (isRefererValid(referer, req.app.get("port"))) {
     return next();
   }

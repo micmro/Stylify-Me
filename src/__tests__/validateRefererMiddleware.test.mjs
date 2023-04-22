@@ -3,7 +3,7 @@ import { validateReferer } from "../validateRefererMiddleware.mjs";
 
 describe("validateRefererMiddleware", () => {
   let statusSpy, jsonpSpy, nextSpy, mockReq, mockRes;
-  let referer = "http://stylify.herokuapp.com";
+  let referer = "http://api.stylifyme.com";
 
   beforeEach(() => {
     jsonpSpy = jest.fn();
@@ -31,7 +31,7 @@ describe("validateRefererMiddleware", () => {
   test.each([
     ["http://stylifyme.com"],
     ["http://www.stylifyme.com"],
-    ["http://stylify.herokuapp.com"],
+    ["http://api.stylifyme.com"],
     ["http://localhost:9185"],
     ["http://localhost:7210"],
     [`http://localhost:4000`],
