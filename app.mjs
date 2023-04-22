@@ -45,7 +45,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/about", (req, res) => {
-  res.redirect(301, "http://stylifyme.com/about-us");
+  res.redirect(301, "http://stylifyme.com/about-us.html");
 });
 
 // renders html for PDF
