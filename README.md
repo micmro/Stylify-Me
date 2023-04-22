@@ -7,11 +7,34 @@ This repo only contains the web service.
 
 ## Deployment
 
-We host our app on [Heroku](http://heroku.com), using the 2 buildpacks below:
+We host our app on EC2
 
-```
-heroku buildpacks:add heroku/google-chrome
-heroku buildpacks:add heroku/nodejs
+Example installation steps on an Ubuntu image:
+
+```bash
+# install chromium
+sudo apt-get update
+sudo apt-get install -y libappindicator1 fonts-liberation
+sudo apt-get install -y chromium-browser
+
+# install node 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&\
+sudo apt-get install -y nodejs
+
+#install puppeteer
+sudo apt-get install -y gcc g++ make
+sudo npm install -g puppeteer
+
+# download and unzip repo
+wget https://github.com/micmro/Stylify-Me/archive/main.tar.gz
+tar -xzvf ./main.tar.gz
+rm main.tar.gz
+mv Stylify-Me-main stylifyme
+cd stylifyme/
+
+#install dependencies and start on port 80
+npm ci
+sudo PORT=80 npm run start
 ```
 
 ## Running the service locally
