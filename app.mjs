@@ -65,9 +65,16 @@ app.get("/query", validateReferer, validateUrlParam, getStylifyJsonHandler);
 // returns browser version number
 app.get("/version", getVersionHandler);
 
-http.createServer(app).listen(app.get("port"), () => {
+const server = http.createServer(app).listen(app.get("port"), () => {
   console.log(
     `http://localhost:${app.get("port")}/query?url=http://stylifyme.com`
   );
   console.log(`Express server listening on port ${app.get("port")}`);
+  process.send("ready");
+});
+
+process.on("SIGINT", () => {
+  server.close(function (err) {
+    process.exit(err ? 1 : 0);
+  });
 });
