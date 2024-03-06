@@ -9,6 +9,7 @@ export const config = {
     "http://stylifyme.com",
     "http://www.stylifyme.com",
     "http://api.stylifyme.com",
+    "http://stylify.herokuapp.com",
     "http://localhost:9185",
     "http://localhost:7210",
   ],
