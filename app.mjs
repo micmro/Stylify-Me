@@ -70,7 +70,9 @@ const server = http.createServer(app).listen(app.get("port"), () => {
     `http://localhost:${app.get("port")}/query?url=http://stylifyme.com`
   );
   console.log(`Express server listening on port ${app.get("port")}`);
-  process.send("ready");
+  if (process && process.send) {
+    process.send("ready");
+  }
 });
 
 process.on("SIGINT", () => {
